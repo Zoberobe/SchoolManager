@@ -52,6 +52,7 @@ namespace SchoolManager.Controllers
                 return View(model);
             }
 
+            // testando pull request
 
             var school = new School
             {
