@@ -51,6 +51,7 @@ namespace SchoolManager.Controllers
                 ModelState.AddModelError(string.Empty, "No administrator found.");
                 return View(model);
             }
+            //Testando Brainch pedro 
 
             // testando pull request
 
