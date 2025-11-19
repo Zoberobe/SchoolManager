@@ -15,6 +15,7 @@ namespace SchoolManager.Controllers
             _context = context;
         }
 
+        //A parada não tá funcionado!!!
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var schools = _context.Schools.ToListAsync(cancellationToken);
