@@ -8,5 +8,6 @@
         public ICollection<Teacher> Teachers { get; set; } = [];
         public ICollection<Student> Students { get; set; } = [];
         public ICollection<StudyGroup> StudyGroups { get; private set; } = [];
+        public ICollection<ExtraCourse> ExtraCourses { get; private set; } = [];
     }
 }

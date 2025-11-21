@@ -1,0 +1,54 @@
+﻿﻿@using SchoolManager.Models.ViewModels.ExtraCourse
+
+@model CreateExtraCourseVM
+
+@{
+    ViewData["Title"] = "Create Extra Course";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-3">
+    <div class="mb-3">
+        <h1 class="h3 mb-1">Create Extra Course</h1>
+        <p class="text-muted mb-0">Fill in the fields below to register a new extra course.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-controller="ExtraCourse" asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Hours" class="form-label"></label>
+                            <input asp-for="Hours" class="form-control" />
+                            <span asp-validation-for="Hours" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i> Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

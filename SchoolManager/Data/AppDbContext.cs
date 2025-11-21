@@ -14,5 +14,6 @@ namespace SchoolManager.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudyGroup> StudyGroups { get; set; }
+        public DbSet<ExtraCourse> ExtraCourses { get; set; }
     }
 }
