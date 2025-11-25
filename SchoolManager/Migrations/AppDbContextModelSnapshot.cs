@@ -54,44 +54,7 @@ namespace SchoolManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Administrators");
-                });
-
-            modelBuilder.Entity("SchoolManager.Models.ExtraCourse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Hours")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SchoolId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Uuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolId");
-
-                    b.ToTable("ExtraCourses");
+                    b.ToTable("Administrators", (string)null);
                 });
 
             modelBuilder.Entity("SchoolManager.Models.School", b =>
@@ -129,7 +92,7 @@ namespace SchoolManager.Migrations
 
                     b.HasIndex("AdministratorId");
 
-                    b.ToTable("Schools");
+                    b.ToTable("Schools", (string)null);
                 });
 
             modelBuilder.Entity("SchoolManager.Models.Student", b =>
@@ -177,7 +140,7 @@ namespace SchoolManager.Migrations
 
                     b.HasIndex("StudyGroupId");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("SchoolManager.Models.StudyGroup", b =>
@@ -218,7 +181,7 @@ namespace SchoolManager.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("StudyGroups");
+                    b.ToTable("StudyGroups", (string)null);
                 });
 
             modelBuilder.Entity("SchoolManager.Models.Teacher", b =>
@@ -261,14 +224,7 @@ namespace SchoolManager.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Teachers");
-                });
-
-            modelBuilder.Entity("SchoolManager.Models.ExtraCourse", b =>
-                {
-                    b.HasOne("SchoolManager.Models.School", null)
-                        .WithMany("ExtraCourses")
-                        .HasForeignKey("SchoolId");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("SchoolManager.Models.School", b =>
@@ -317,8 +273,6 @@ namespace SchoolManager.Migrations
 
             modelBuilder.Entity("SchoolManager.Models.School", b =>
                 {
-                    b.Navigation("ExtraCourses");
-
                     b.Navigation("Students");
 
                     b.Navigation("StudyGroups");
