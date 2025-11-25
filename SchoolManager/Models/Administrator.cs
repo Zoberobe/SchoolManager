@@ -4,12 +4,13 @@
     {
         public decimal Capital { get; private set; }
 
-        public Administrator()
+
+        public Administrator() { }
+
+        public Administrator(string name, DateOnly birth, decimal capital)
+            : base(name, birth)
         {
-            
-        }
-        public Administrator(string name, DateOnly birth, decimal capital) : base(name, birth)
-        {
+            Capital = capital;
         }
 
         public string GetName()
@@ -18,19 +19,18 @@
         }
 
 
-
-        public void UpdateProperties( string name, DateOnly birth, decimal capital)
+        public void UpdateProperties(string name, DateOnly birth, decimal capital)
         {
             if (capital < 0)
                 throw new ArgumentOutOfRangeException(nameof(capital), "Capital não pode ser negativo.");
 
             Capital = capital;
-            UpdatedAt = DateTime.UtcNow;
+            MarkUpdatedAt();
             UpdateName(name);
             UpdateBirth(birth);
         }
 
-  
+
 
 
 

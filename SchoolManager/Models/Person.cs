@@ -13,7 +13,7 @@ namespace SchoolManager.Models
             Birth = birth;
         }
 
-       protected void UpdateName(string name)
+        protected void UpdateName(string name)
         {
             Name = name;
         }

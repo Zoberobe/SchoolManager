@@ -7,8 +7,6 @@
 
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px;">
-
-        <!-- CABEÇALHO -->
         <div class="card-header bg-primary text-white d-flex align-items-center p-4"
              style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #0d6efd, #0a58ca);">
 
@@ -19,26 +17,19 @@
                 </span>
             </div>
         </div>
-
-        <!-- CORPO -->
         <div class="card-body p-4">
             <div class="row g-4">
 
-                <!-- COLUNA ESQUERDA -->
                 <div class="col-md-6 border-end-md">
                     <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
                         <i class="fas fa-user me-1"></i> Informações Pessoais
                     </h5>
-
-                    <!-- Nome -->
                     <div class="mb-3">
                         <label class="text-muted small fw-bold">Nome</label>
                         <div class="fs-5 text-dark">
                             @Model.Name
                         </div>
                     </div>
-
-                    <!-- Data de nascimento -->
                     <div class="mb-3">
                         <label class="text-muted small fw-bold">Data de Nascimento</label>
                         <div class="fs-5 text-dark">
@@ -46,17 +37,12 @@
                             @Html.DisplayFor(m => m.Birth)
                         </div>
                     </div>
-
                 </div>
-
-                <!-- COLUNA DIREITA -->
                 <div class="col-md-6 ps-md-4">
                     <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
                         <i class="fas fa-coins me-1"></i> Informações Financeiras
                     </h5>
-
-                    <!-- Capital -->
                     <div class="mb-3">
                         <label class="text-muted small fw-bold">Capital</label>
                         <div class="fs-4 fw-bold text-dark">
-                        @Model.Capital
+@Model.Capital

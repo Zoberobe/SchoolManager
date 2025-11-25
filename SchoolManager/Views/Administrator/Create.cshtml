@@ -1,47 +1,71 @@
-﻿@model SchoolManager.Models.Administrator
+﻿@model SchoolManager.Models.ViewModels.AdministratorVM.CreateAdministratorVM
 
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Cadastrar Administrador";
 }
 
-<h1>Create</h1>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 850px;">
 
-<h4>Administrator</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Capital" class="control-label"></label>
-                <input asp-for="Capital" class="form-control" />
-                <span asp-validation-for="Capital" class="text-danger"></span>
+        <div class="card-header bg-primary text-white d-flex align-items-center p-4"
+             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #0d6efd, #0a58ca);">
+            <i class="fas fa-user-shield fa-2x me-3"></i>
+            <div>
+                <h2 class="mb-0 fw-bold">Cadastro de Administrador</h2>
+                <small class="opacity-75">Preencha as informações abaixo para registrar um novo administrador.</small>
             </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-                <div class="form-group">
-                    <label asp-for="Birth" class="control-label"></label>
-                    <input asp-for="Birth" class="form-control" />
-                    <span asp-validation-for="Birth" class="text-danger"></span>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Create">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-bold text-muted small">Nome Completo</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                        <input asp-for="Name" class="form-control form-control-lg" placeholder="Ex: Ana Pereira" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small"></span>
                 </div>
 
-@*             <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
-                </label>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="mb-4">
+                    <label asp-for="Capital" class="form-label fw-bold text-muted small">Capital (R$)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light fw-bold text-success">R$</span>
+                        <input asp-for="Capital" class="form-control form-control-lg" placeholder="0,00" />
+                    </div>
+                    <span asp-validation-for="Capital" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Birth" class="form-label fw-bold text-muted small">Data de Nascimento</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-calendar-alt"></i></span>
+                        <input asp-for="Birth" type="date" class="form-control form-control-lg" />
+                    </div>
+                    <span asp-validation-for="Birth" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary fw-bold px-5">
+                        <i class="fas fa-check me-1"></i> Cadastrar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
