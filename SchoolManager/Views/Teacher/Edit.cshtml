@@ -55,7 +55,7 @@
                                    autocomplete="off" />
 
                             <datalist id="matters-list">
-                                @if (ViewBag.Matters.Count > 0)
+                                @if (Model.Matterlists.Any())
                                 {
                                     foreach (var item in Model.Matterlists)
                                     {
