@@ -11,8 +11,8 @@
         public virtual StudyGroup? StudyGroup { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
-        public Student(string name, decimal monthlyFee, bool isScholarshipRecipient, int schoolId, int studyGroupId)
-        : base(name)
+        public Student(string name, DateOnly birth, decimal monthlyFee, bool isScholarshipRecipient, int schoolId, int studyGroupId)
+        : base(name, birth)
         {
             IsScholarshipRecipient = isScholarshipRecipient;
             MonthlyFee = IsScholarshipRecipient ? 0 : monthlyFee;
@@ -70,9 +70,6 @@
             UpdateFinancials(newFee, isScholarship);
         }
 
-        public void Delete()
-        {
-            IsDeleted = true;
-        }
+        
     }
 }

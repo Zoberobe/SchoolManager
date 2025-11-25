@@ -19,7 +19,7 @@ namespace SchoolManager.Controllers
         }
 
         //Pega todos os registros no banco  
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, CancellationToken cancellationToken)
         {
             
             int pageSize = 10;
@@ -30,7 +30,7 @@ namespace SchoolManager.Controllers
             var students = await _context.Students
                 .Where(s => s.IsDeleted == false)
                 .OrderBy(s => s.Name) 
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             // Mapeia para a ViewModel
             var viewModels = students.Select(s => new StudentFormViewModel
@@ -48,7 +48,7 @@ namespace SchoolManager.Controllers
 
         //Pega o detalhe de um Estudante especifico
 
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid? id, CancellationToken cancellationToken)
         {
             if (id == null) return NotFound();
 
@@ -56,7 +56,7 @@ namespace SchoolManager.Controllers
                 .Include(s => s.School)                 
                 .Include(s => s.StudyGroup)            
                     .ThenInclude(g => g.Teacher)        
-                .FirstOrDefaultAsync(m => m.Uuid == id);
+                .FirstOrDefaultAsync(m => m.Uuid == id, cancellationToken);
 
             if (student == null) return NotFound();
 
@@ -82,16 +82,15 @@ namespace SchoolManager.Controllers
 
         public async Task<IActionResult> Create()
         {
-
-            ViewData["Schools"] = new SelectList(await _context.Schools.ToListAsync(), "Uuid", "Name");
-            await LoadviewBags(); 
-            return View();
+            var viewModel = new StudentFormViewModel();
+            await ViewStudents(viewModel); // Chamada corrigida
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         //Criar um novo estudante
-        public async Task<IActionResult> Create(StudentFormViewModel viewModel)
+        public async Task<IActionResult> Create(StudentFormViewModel viewModel, CancellationToken cancellationToken)
         {
             // Regra do Bolsista
             if (viewModel.IsScholarshipRecipient)
@@ -102,10 +101,10 @@ namespace SchoolManager.Controllers
 
             if (ModelState.IsValid)
             {
-                var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid);
+                var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid, cancellationToken);
 
                 
-                var studyGroup = await _context.StudyGroups.FirstOrDefaultAsync(g => g.Uuid == viewModel.StudyGroupUuid);
+                var studyGroup = await _context.StudyGroups.FirstOrDefaultAsync(g => g.Uuid == viewModel.StudyGroupUuid, cancellationToken);
 
                 if (school == null || studyGroup == null)
                 {
@@ -116,6 +115,7 @@ namespace SchoolManager.Controllers
                 {
                     var student = new Student(
                         viewModel.Name,
+                        DateOnly.FromDateTime(DateTime.Now),
                         viewModel.MonthlyFee,
                         viewModel.IsScholarshipRecipient,
                         school.Id,     
@@ -123,27 +123,27 @@ namespace SchoolManager.Controllers
                     );
 
                     _context.Add(student);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             // Recarrega os dropdowns em caso de erro
-            await LoadviewBags(viewModel.SchoolUuid, viewModel.StudyGroupUuid);
+            await ViewStudents(viewModel, cancellationToken);
             return View(viewModel);
         }
         //Editar um estudante existente
 
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, CancellationToken cancellationToken)
         {
             if (id == null) return NotFound();
 
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.Uuid == id);
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
             if (student == null) return NotFound();
 
             
-            var currentSchool = await _context.Schools.FindAsync(student.SchoolId);
-            var currentGroup = await _context.StudyGroups.FindAsync(student.StudyGroupId); 
+            var currentSchool = await _context.Schools.FindAsync(student.SchoolId, cancellationToken);
+            var currentGroup = await _context.StudyGroups.FindAsync(student.StudyGroupId, cancellationToken); 
 
             var viewModel = new StudentFormViewModel
             {
@@ -155,15 +155,14 @@ namespace SchoolManager.Controllers
                 StudyGroupUuid = currentGroup?.Uuid ?? Guid.Empty 
             };
 
-            
-            await LoadviewBags(viewModel.SchoolUuid, viewModel.StudyGroupUuid);
 
+            await ViewStudents(viewModel, cancellationToken);
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, StudentFormViewModel viewModel)
+        public async Task<IActionResult> Edit(Guid id, StudentFormViewModel viewModel, CancellationToken cancellationToken)
         {
             if (id != viewModel.Uuid) return NotFound();
 
@@ -174,23 +173,18 @@ namespace SchoolManager.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    var studentOriginal = await _context.Students.FirstOrDefaultAsync(s => s.Uuid == id);
+                    var studentOriginal = await _context.Students.FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
                     if (studentOriginal == null) return NotFound();
 
-                    // 1. Busca a Nova Escola
-                    var newSchool = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid);
-
-                    // 2. Busca a Nova Turma (FALTAVA ISSO)
-                    var newGroup = await _context.StudyGroups.FirstOrDefaultAsync(g => g.Uuid == viewModel.StudyGroupUuid);
+                    var newSchool = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid, cancellationToken);
+                    var newGroup = await _context.StudyGroups.FirstOrDefaultAsync(g => g.Uuid == viewModel.StudyGroupUuid, cancellationToken);
 
                     if (newSchool == null || newGroup == null)
                     {
                         if (newSchool == null) ModelState.AddModelError("SchoolUuid", "Escola inválida.");
                         if (newGroup == null) ModelState.AddModelError("StudyGroupUuid", "Turma inválida.");
 
-                        await LoadviewBags(viewModel.SchoolUuid, viewModel.StudyGroupUuid);
+                        await ViewStudents(viewModel, cancellationToken);
                         return View(viewModel);
                     }
 
@@ -204,28 +198,21 @@ namespace SchoolManager.Controllers
                     );
 
                     _context.Update(studentOriginal);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StudentExists(viewModel.Uuid)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
 
-            await LoadviewBags(viewModel.SchoolUuid, viewModel.StudyGroupUuid);
+            await ViewStudents(viewModel, cancellationToken);
             return View(viewModel);
         }
 
         //Excluir um estudante
 
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid? id, CancellationToken cancellationToken)
         {
             if (id == null) return NotFound();
 
             var student = await _context.Students
-                .FirstOrDefaultAsync(m => m.Uuid == id);
+                .FirstOrDefaultAsync(m => m.Uuid == id, cancellationToken);
 
             if (student == null) return NotFound();
 
@@ -242,54 +229,51 @@ namespace SchoolManager.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id) // Recebe Guid
+        public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken) // Recebe Guid
         {
             // Busca pelo UUID
             var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.Uuid == id);
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
 
             if (student != null)
             {
-                student.Delete();
+                student.MarkAsDeleted();
 
                 _context.Update(student); // Atualiza o registro
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StudentExists(Guid uuid)
+
+        private async Task ViewStudents(StudentFormViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            return _context.Students.Any(e => e.Uuid == uuid);
-        }
+            // Carrega escolas
+            var schools = await _context.Schools.OrderBy(x => x.Name).ToListAsync(cancellationToken);
+            viewModel.SchoolsList = new SelectList(schools, "Uuid", "Name", viewModel.SchoolUuid);
 
-        private async Task LoadviewBags(Guid? selectedSchoolUuid = null, Guid? selectedGroupUuid = null)
-        {
-            ViewData["Schools"] = new SelectList(await _context.Schools.ToListAsync(), "Uuid", "Name", selectedSchoolUuid);
-
-
+            // Lógica de Grupos
             var groups = new List<object>();
 
-            if (selectedSchoolUuid != null)
+            if (viewModel.SchoolUuid != Guid.Empty)
             {
-                var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == selectedSchoolUuid);
+                var school = schools.FirstOrDefault(s => s.Uuid == viewModel.SchoolUuid);
 
                 if (school != null)
                 {
                     groups = await _context.StudyGroups
-                        .Where(g => g.SchoolId == school.Id) 
+                        .Where(g => g.SchoolId == school.Id)
                         .Include(g => g.Teacher)
                         .Select(g => new
                         {
-                            Uuid = g.Uuid,
                             DisplayName = $"{g.Teacher.Name} - {g.InitialDate.Year}"
                         })
-                        .ToListAsync<object>();
+                        .ToListAsync<object>(cancellationToken);
                 }
             }
 
-            ViewData["StudyGroups"] = new SelectList(groups, "Uuid", "DisplayName", selectedGroupUuid);
+            viewModel.StudyGroupsList = new SelectList(groups, "Uuid", "DisplayName", viewModel.StudyGroupUuid);
         }
 
         [HttpGet]

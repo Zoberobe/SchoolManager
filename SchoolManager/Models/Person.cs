@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-
+﻿
 namespace SchoolManager.Models
 {
     public abstract class Person : EntityBase
