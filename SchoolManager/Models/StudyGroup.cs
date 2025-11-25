@@ -8,6 +8,8 @@
             public virtual ICollection<Student> Students { get; private set; } = new List<Student>();
             public int SchoolId { get; set; }
 
+        public StudyGroup() { }
+
 
     }
 }

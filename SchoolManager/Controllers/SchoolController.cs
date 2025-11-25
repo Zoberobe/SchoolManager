@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SchoolManager.Data;
 using SchoolManager.Models;
 using SchoolManager.Models.ViewModels.SchoolVM;
