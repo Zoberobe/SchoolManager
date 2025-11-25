@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolManager.Data;
 using SchoolManager.Models;
 using SchoolManager.Models.ViewModels.AdministratorVM;
+using X.PagedList.Extensions;
 
 namespace SchoolManager.Controllers
 {
@@ -16,19 +17,30 @@ namespace SchoolManager.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+     
+            public async Task<IActionResult> Index(int? page, CancellationToken cancellationToken)
         {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
 
-            var administrators = await _context.Administrators.Where(s => s.IsDeleted == false).ToListAsync(cancellationToken);
-            var model = administrators.Select(administrator => new IndexAdministratorVM
+            var administrators = await _context.Administrators
+                .Where(a => !a.IsDeleted)
+                .OrderBy(a => a.Name)
+                .ToListAsync(cancellationToken);
+
+            var model = administrators.Select(a => new IndexAdministratorVM
             {
-                Uuid = administrator.Uuid,
-                Name = administrator.Name,
-                Birth = administrator.Birth,
-                Capital = administrator.Capital
-            }).ToList();
-            return View(model);
+                Uuid = a.Uuid,
+                Name = a.Name,
+                Capital = a.Capital,
+                Birth = a.Birth
+            });
+
+            var pagedList = model.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedList);
         }
+        
 
         [HttpGet]
         public async Task<IActionResult> Create()
