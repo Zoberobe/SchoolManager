@@ -8,6 +8,7 @@ namespace SchoolManager.Models
         public decimal Salary { get; private set; }
         public School? School { get; internal set; }
         public int SchoolId { get; set; }
+        public ICollection<StudyGroup> StudyGroups { get; private set; } = [];
 
         public void SetSalary(decimal value)
         {
