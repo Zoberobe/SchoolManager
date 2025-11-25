@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SchoolManager.Data;
 using SchoolManager.Models;
-using SchoolManager.Models.ViewModels.SchoolVM; // Assumindo que IndexSchoolVM e DetailsSchoolVM existem
+using SchoolManager.Models.ViewModels.SchoolVM;
 using X.PagedList.Extensions;
 
 namespace SchoolManager.Controllers
@@ -175,11 +175,6 @@ namespace SchoolManager.Controllers
 
             return RedirectToAction(nameof(Index));
 
-        }
-
-        public ActionResult Link()
-        {
-            return Redirect("http://www.google.com.br/search?q=%s");
         }
 
     }
