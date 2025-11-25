@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolManager.Models;
-using SchoolManager.Models.ViewModels.SchoolVM;
 
 namespace SchoolManager.Data
 {
@@ -15,6 +14,5 @@ namespace SchoolManager.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudyGroup> StudyGroups { get; set; }
-
     }
 }

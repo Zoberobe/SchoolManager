@@ -1,0 +1,198 @@
+﻿@model SchoolManager.ViewModels.StudentFormViewModel
+
+@{
+    ViewData["Title"] = "Editar Estudante";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
+
+        <!-- CABEÇALHO -->
+        <div class="card-header bg-warning text-dark d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
+            <i class="fas fa-user-edit fa-2x me-3"></i>
+            <div>
+                <h3 class="mb-0 fw-bold">Editar Estudante</h3>
+                <small class="text-dark opacity-75">Atualize as informações acadêmicas e financeiras abaixo.</small>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="Uuid" />
+
+                <!-- SEÇÃO 1: DADOS PESSOAIS -->
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-id-card me-1"></i> Dados Pessoais
+                </h5>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Ex: Maria Eduarda" />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 2: DADOS ACADÊMICOS -->
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-graduation-cap me-1"></i> Acadêmico
+                </h5>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="SchoolUuid" class="form-label fw-bold text-muted small">Escola</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
+                            <select asp-for="SchoolUuid" class="form-select" asp-items="ViewBag.Schools" id="SchoolUuid">
+                                <option value="">-- Selecione a Escola --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="SchoolUuid" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="StudyGroupUuid" class="form-label fw-bold text-muted small">Turma</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-users"></i></span>
+                            <select asp-for="StudyGroupUuid" class="form-select" asp-items="ViewBag.StudyGroups" id="StudyGroupUuid">
+                                <option value="">-- Selecione a Turma --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="StudyGroupUuid" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 3: FINANCEIRO -->
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-hand-holding-usd me-1"></i> Financeiro
+                </h5>
+
+                <div class="row g-3 align-items-center">
+                    <!-- Switch de Bolsista -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-light d-flex align-items-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsScholarshipRecipient" id="chkScholarship" style="cursor: pointer; transform: scale(1.2);">
+                                <label class="form-check-label ms-2 fw-bold text-dark" for="chkScholarship" style="cursor: pointer;">
+                                    O aluno é bolsista?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valor da Mensalidade (Controlado pelo JS) -->
+                    <div class="col-md-6" id="divMonthlyFeeContainer">
+                        <label asp-for="MonthlyFee" class="form-label fw-bold text-muted small">Valor da Mensalidade (R$)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-success">R$</span>
+                            <input asp-for="MonthlyFee" class="form-control" id="txtMonthlyFee" placeholder="0,00" />
+                        </div>
+                        <span asp-validation-for="MonthlyFee" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- RODAPÉ / BOTÕES -->
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i> Salvar Alterações
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- IMPORTANTE: Adiciona jQuery explicitamente para resolver o erro "$ is not defined" -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Correção para validação de moedas (vírgula vs ponto)
+        $.validator.methods.range = function (value, element, param) {
+            var globalizedValue = value.replace(",", ".");
+            return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+        }
+
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
+        $(document).ready(function () {
+
+            // --- 1. LÓGICA DO BOLSISTA (ATUALIZADA) ---
+            function toggleFee() {
+                var isChecked = $("#chkScholarship").is(":checked");
+                var feeInput = $("#txtMonthlyFee");
+
+                // Agora usamos o ID específico do container para ocultar/mostrar a coluna inteira
+                var feeContainer = $("#divMonthlyFeeContainer");
+
+                if (isChecked) {
+                    // SE FOR BOLSISTA:
+                    feeContainer.fadeOut(200); // Animação suave
+                    feeInput.val(0);
+                } else {
+                    // SE NÃO FOR BOLSISTA:
+                    feeContainer.fadeIn(200);
+
+                    if (feeInput.val() == 0 || feeInput.val() == "0,00") {
+                        feeInput.val('');
+                    }
+                }
+            }
+
+            // Inicializa e configura o evento
+            toggleFee();
+            $("#chkScholarship").change(function () {
+                toggleFee();
+            });
+
+
+            // --- 2. LÓGICA DA TROCA DE ESCOLA (MANTIDA IGUAL) ---
+            $("#SchoolUuid").change(function () {
+                var selectedSchoolUuid = $(this).val();
+                var groupsDropdown = $("#StudyGroupUuid");
+
+                groupsDropdown.empty();
+                groupsDropdown.append('<option value="">Carregando turmas...</option>');
+
+                if (selectedSchoolUuid) {
+                    $.ajax({
+                        url: '@Url.Action("GetStudyGroupsBySchool", "Student")', // Confirme se o Controller é 'Student' mesmo
+                        type: 'GET',
+                        data: { schoolUuid: selectedSchoolUuid },
+                        success: function (data) {
+                            groupsDropdown.empty();
+                            groupsDropdown.append('<option value="">-- Selecione a Turma --</option>');
+                            $.each(data, function (index, item) {
+                                groupsDropdown.append($('<option>', {
+                                    value: item.value,
+                                    text: item.text
+                                }));
+                            });
+                        },
+                        error: function() {
+                             groupsDropdown.empty();
+                             groupsDropdown.append('<option value="">Erro ao carregar turmas</option>');
+                        }
+                    });
+                } else {
+                    groupsDropdown.empty();
+                    groupsDropdown.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
+                }
+            });
+        });
+    </script>
+}

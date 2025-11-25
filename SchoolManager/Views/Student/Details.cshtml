@@ -1,0 +1,94 @@
+﻿@model SchoolManager.ViewModels.StudentFormViewModel
+
+@{
+    ViewData["Title"] = "Detalhes do Estudante";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px;">
+
+        <!-- CABEÇALHO: Nome e Foto (Ícone) -->
+        <div class="card-header bg-primary text-white d-flex align-items-center p-4"
+             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #0d6efd, #0a58ca);">
+            <div>
+                <h2 class="mb-0 fw-bold">@Model.Name</h2>
+                <span class="opacity-75"><i class="fas fa-id-badge me-1"></i> Detalhes do Aluno</span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+
+                <!-- COLUNA 1: Acadêmico -->
+                <div class="col-md-6 border-end-md">
+                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
+                        <i class="fas fa-university me-1"></i> Dados Escolares
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Escola</label>
+                        <div class="fs-5 text-dark">
+                            @Model.SchoolName
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Turma / Ano</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-users text-primary opacity-50 me-1"></i> @Model.StudyGroupName
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Professor Responsável</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-chalkboard-teacher text-primary opacity-50 me-1"></i> @Model.TeacherName
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUNA 2: Financeiro -->
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
+                        <i class="fas fa-coins me-1"></i> Financeiro
+                    </h5>
+
+                    <div class="mb-4">
+                        <label class="text-muted small fw-bold d-block mb-1">Situação da Bolsa</label>
+                        @if (Model.IsScholarshipRecipient)
+                        {
+                            <span class="badge bg-success rounded-pill px-3 py-2 fs-6 shadow-sm">
+                                <i class="fas fa-check-circle me-1"></i> BOLSISTA (Sim)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-light text-secondary border rounded-pill px-3 py-2 fs-6">
+                                <i class="fas fa-times-circle me-1"></i> NÃO BOLSISTA
+                            </span>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Valor da Mensalidade</label>
+                        <div class="fs-3 fw-bold text-dark">
+                            @Html.DisplayFor(model => model.MonthlyFee)
+                        </div>
+                        <small class="text-muted">Valor mensal vigente</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RODAPÉ: Botões de Ação -->
+        <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2" style="border-radius: 0 0 10px 10px;">
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Uuid" class="btn btn-warning fw-bold text-dark px-4">
+                <i class="fas fa-pen me-1"></i> Editar
+            </a>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,131 @@
+﻿@model SchoolManager.ViewModels.StudentFormViewModel
+
+@{
+    ViewData["Title"] = "Adicionar um Estudante";
+}
+
+<h1>Novo estudante</h1>
+
+<h4>Formulário de um novo estudante</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsScholarshipRecipient" id="chkScholarship" />
+                    @Html.DisplayNameFor(model => model.IsScholarshipRecipient)
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MonthlyFee" class="control-label"></label>
+                <input asp-for="MonthlyFee" class="form-control" id="txtMonthlyFee" />
+                <span asp-validation-for="MonthlyFee" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SchoolUuid" class="control-label"></label>
+                <select asp-for="SchoolUuid" class="form-control" asp-items="ViewBag.Schools" id="SchoolUuid">
+                    <option value="">-- Selecione a Escola --</option>
+                </select>
+                <span asp-validation-for="SchoolUuid" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StudyGroupUuid" class="control-label"></label>
+
+                <select asp-for="StudyGroupUuid" class="form-control" asp-items="ViewBag.StudyGroups" id="StudyGroupUuid">
+                    <option value="">-- Selecione uma Escola Primeiro --</option>
+                </select>
+                <span asp-validation-for="StudyGroupUuid" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Criar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para todos os alunos</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+
+            function toggleFee() {
+                var isChecked = $("#chkScholarship").is(":checked");
+                var feeInput = $("#txtMonthlyFee");
+                var feeContainer = feeInput.closest(".form-group");
+
+                if (isChecked) {
+
+                    feeContainer.hide();
+                    feeInput.val(0);
+                } else {
+
+                    feeContainer.show();
+
+
+                    if (feeInput.val() == 0) {
+                        feeInput.val('');
+                    }
+                }
+            }
+
+
+            toggleFee();
+
+
+            $("#chkScholarship").change(function () {
+                toggleFee();
+            });
+
+
+            $("#SchoolUuid").change(function () {
+              var selectedSchoolUuid = $(this).val();
+              var groupsDropdown = $("#StudyGroupUuid");
+
+                groupsDropdown.empty();
+                groupsDropdown.append('<option value="">Carregando turmas...</option>');
+
+                if (selectedSchoolUuid) {
+
+                   $.ajax({
+                     url: '@Url.Action("GetStudyGroupsBySchool", "Student")',
+                     type: 'GET',
+                     data: { schoolUuid: selectedSchoolUuid },
+                     success: function (data) {
+                     groupsDropdown.empty();
+                     groupsDropdown.append('<option value="">-- Selecione a Turma --</option>');
+                        $.each(data, function (index, item) {
+                          groupsDropdown.append($('<option>', {
+                          value: item.value,
+                          text: item.text
+                          }));
+                          });
+                          }
+                       });
+                 } else {
+                  groupsDropdown.empty();
+                  groupsDropdown.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
+                  }
+                 });
+              });
+    </script>
+}

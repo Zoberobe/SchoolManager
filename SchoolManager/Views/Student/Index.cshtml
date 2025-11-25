@@ -1,0 +1,140 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+@* Define o modelo como uma lista paginada *@
+@model IPagedList<SchoolManager.ViewModels.StudentFormViewModel>
+
+@{
+    ViewData["Title"] = "Lista de Alunos";
+}
+
+<!-- CDN do FontAwesome para os ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container mt-5">
+    
+    <!-- CARD PRINCIPAL -->
+    <div class="card shadow-lg border-0">
+        
+        <!-- CABEÇALHO DO CARD -->
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 45px; height: 45px;">
+                    <i class="fas fa-user-graduate fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold text-dark">Alunos Cadastrados</h5>
+                    <small class="text-muted">Gerencie as matrículas e bolsas</small>
+                </div>
+            </div>
+            
+            <a asp-action="Create" class="btn btn-primary fw-bold shadow-sm">
+                <i class="fas fa-plus me-2"></i> Novo Aluno
+            </a>
+        </div>
+
+        <!-- CORPO COM A TABELA -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th scope="col" class="ps-4 py-3" style="width: 30%;">Nome</th>
+                            <th scope="col" class="py-3">Bolsista?</th>
+                            <th scope="col" class="py-3">Mensalidade</th>
+                            <th scope="col" class="text-end pe-4 py-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <!-- NOME + AVATAR -->
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center me-3 text-secondary" 
+                                             style="width: 40px; height: 40px; min-width: 40px;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.Name</div>
+                                            <small class="text-muted" style="font-size: 0.8rem;">
+                                                <i class="fas fa-school me-1"></i> @item.SchoolName
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- BOLSISTA -->
+                                <td>
+                                    @if (item.IsScholarshipRecipient)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                            <i class="fas fa-check-circle me-1"></i> Sim
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-3">
+                                            Não
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- MENSALIDADE -->
+                                <td class="fw-semibold text-dark">
+                                    @Html.DisplayFor(modelItem => item.MonthlyFee)
+                                </td>
+
+                                <!-- AÇÕES -->
+                                <td class="text-end pe-4">
+                                    <div class="btn-group shadow-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Uuid" class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Uuid" class="btn btn-sm btn-outline-info" title="Detalhes">
+                                            <i class="fas fa-info-circle"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Uuid" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RODAPÉ COM PAGINAÇÃO X.PAGEDLIST -->
+        <div class="card-footer bg-white py-3 border-top">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                
+                <!-- Informação da Página -->
+                <small class="text-muted mb-2 mb-md-0">
+                    Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+                </small>
+                
+                <!-- Navegação Gerada pelo X.PagedList -->
+                <nav aria-label="Navegação">
+                    @Html.PagedListPager(
+                        Model, 
+                        page => Url.Action("Index", new { page = page }), 
+                        new PagedListRenderOptions {
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" },
+                            UlElementClasses = new string[] { "pagination", "pagination-sm", "mb-0" },
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                            DisplayLinkToLastPage = PagedListDisplayMode.Never,
+                            LinkToPreviousPageFormat = "<i class='fas fa-chevron-left'></i>",
+                            LinkToNextPageFormat = "<i class='fas fa-chevron-right'></i>"
+                        }
+                    )
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
