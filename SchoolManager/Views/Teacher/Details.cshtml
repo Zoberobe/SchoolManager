@@ -1,94 +1,151 @@
-﻿@model DetailsTeacherIVM
+﻿@model SchoolManager.Models.ViewModels.TeacherVM.EditTeacherIVM
 
 @{
-    ViewData["Title"] = "Detalhes do Professor";
+    ViewData["Title"] = "Editar Professor";
 }
 
 <div class="container mt-5 d-flex justify-content-center">
-    <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px;">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
 
-        <!-- CABEÇALHO: Nome -->
-        <div class="card-header bg-primary text-white d-flex align-items-center p-4"
-             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #0d6efd, #0a58ca);">
+        <div class="card-header bg-warning text-dark d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
+            <i class="fas fa-chalkboard-teacher fa-2x me-3"></i>
             <div>
-                <h2 class="mb-0 fw-bold">@Model.Name</h2>
-                <span class="opacity-75">
-                    <i class="fas fa-chalkboard-teacher me-1"></i> Detalhes do Professor
-                </span>
+                <h3 class="mb-0 fw-bold">Editar Professor</h3>
+                <small class="text-dark opacity-75">Atualize as informações do professor abaixo.</small>
             </div>
         </div>
 
         <div class="card-body p-4">
-            <div class="row g-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="Uuid" />
 
-                <!-- COLUNA 1: Dados pessoais -->
-                <div class="col-md-6 border-end-md">
-                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
-                        <i class="fas fa-user me-1"></i> Informações Pessoais
-                    </h5>
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-id-card me-1"></i> Dados Pessoais
+                </h5>
 
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Nome</label>
-                        <div class="fs-5 text-dark">
-                            @Model.Name
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Ex: João Pereira" />
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Data de Nascimento</label>
-                        <div class="fs-5 text-dark">
-                            <i class="fas fa-calendar-day text-primary opacity-50 me-1"></i>
-                            @Html.DisplayFor(m => m.Birth)
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Escola</label>
-                        <div class="fs-5 text-dark">
-                            <i class="fas fa-school text-primary opacity-50 me-1"></i>
-                            @Model.SchoolName
-                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
                 </div>
 
-                <!-- COLUNA 2: Materia e salário -->
-                <div class="col-md-6 ps-md-4">
-                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
-                        <i class="fas fa-book me-1"></i> Informações Acadêmicas
-                    </h5>
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-graduation-cap me-1"></i> Acadêmico
+                </h5>
 
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Matéria</label>
-                        <div class="fs-5 text-dark">
-                            <i class="fas fa-book-open text-primary opacity-50 me-1"></i>
-                            @Model.Matter
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Matter" class="form-label fw-bold text-muted small">Matéria</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-book"></i></span>
+                            <select asp-for="Matter"
+                                    asp-items="Model.Matterlists"
+                                    class="form-select">
+                                <option value="">Selecione uma matéria...</option>
+                            </select>
                         </div>
+                        <span asp-validation-for="Matter" class="text-danger small"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold d-block mb-1">Salário</label>
-                        <div class="fs-3 fw-bold text-dark">
-                            @Html.DisplayFor(m => m.Salary)
+                    <div class="col-md-6">
+                        <label asp-for="SchoolName" class="form-label fw-bold text-muted small">Escola</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
+                            <select asp-for="SchoolName"
+                                    asp-items="Model.Schoollist"
+                                    class="form-select">
+                                <option value="">Selecione a escola...</option>
+                            </select>
                         </div>
-                        <small class="text-muted">Salário mensal</small>
+                        <span asp-validation-for="SchoolName" class="text-danger small"></span>
                     </div>
                 </div>
 
-            </div>
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-money-check-alt me-1"></i> Financeiro
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label asp-for="InputSalary" class="form-label fw-bold text-muted small">Salário (R$)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-success">R$</span>
+                            <input asp-for="InputSalary" class="form-control" placeholder="Ex: 3500,00" />
+                        </div>
+                        <span asp-validation-for="InputSalary" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i> Salvar Alterações
+                    </button>
+                </div>
+
+            </form>
         </div>
-
-        <!-- RODAPÉ: Botões -->
-        <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2"
-             style="border-radius: 0 0 10px 10px;">
-
-            <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                <i class="fas fa-arrow-left me-1"></i> Voltar
-            </a>
-
-            <a asp-action="Edit" asp-route-id="@Model.Uuid" class="btn btn-warning fw-bold text-dark px-4">
-                <i class="fas fa-pen me-1"></i> Editar
-            </a>
-        </div>
-
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Ajuste do jQuery Validation para aceitar números com vírgula (por ex., "3.500,00" ou "3500,00")
+        $.validator.methods.number = function (value, element) {
+            if (this.optional(element)) {
+                return true;
+            }
+            // remove espaços, troca vírgula por ponto e valida formato numérico
+            var normalized = value.replace(/\s/g, '').replace(',', '.');
+            return /^-?(?:\d+|\d{1,3}(?:[\.,]\d{3})+)(?:[\.,]\d+)?$/.test(normalized);
+        };
+
+        // Ajusta a validação de range para considerar o valor com vírgula
+        $.validator.methods.range = function (value, element, param) {
+            if (this.optional(element)) {
+                return true;
+            }
+            var normalized = parseFloat(value.replace(/\s/g, '').replace(',', '.'));
+            return (normalized >= param[0] && normalized <= param[1]);
+        };
+
+        $(function () {
+            // Antes de submeter o formulário, normalize o salário para usar ponto decimal
+            $("form[asp-action='Edit']").on("submit", function () {
+                var salaryInput = $("#InputSalary, input[name='InputSalary']");
+                if (salaryInput.length) {
+                    var val = salaryInput.val();
+                    if (val) {
+                        // remove espaços, troca vírgula por ponto e deixa em formato "1234.56"
+                        var normalized = val.toString().trim().replace(/\s/g, '').replace(',', '.');
+                        salaryInput.val(normalized);
+                    }
+                }
+            });
+
+            // Adiciona máscara simples ao campo de salário enquanto digita (opcional)
+            $("#InputSalary, input[name='InputSalary']").on("input", function () {
+                var v = $(this).val();
+                // Permite apenas dígitos, ponto e vírgula
+                var cleaned = v.replace(/[^\d\.,\-]/g, '');
+                $(this).val(cleaned);
+            });
+
+            // (Opcional) Removido o código de 'change' para SchoolName, pois agora é um select padrão.
+        });
+    </script>
+}

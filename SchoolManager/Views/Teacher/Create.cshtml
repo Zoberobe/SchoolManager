@@ -6,8 +6,6 @@
 
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg border-0" style="width: 100%; max-width: 850px;">
-
-        <!-- CABEÇALHO -->
         <div class="card-header bg-success text-white d-flex align-items-center p-4"
              style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #198754, #157347);">
             <i class="fas fa-chalkboard-teacher fa-2x me-3"></i>
@@ -16,14 +14,11 @@
                 <small class="opacity-75">Preencha as informações abaixo para registrar um novo docente.</small>
             </div>
         </div>
-
-        <!-- CORPO -->
         <div class="card-body p-4">
             <form asp-action="Create">
 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <!-- NOME -->
                 <div class="mb-4">
                     <label asp-for="Name" class="form-label fw-bold text-muted small">Nome Completo</label>
                     <div class="input-group">
@@ -33,30 +28,19 @@
                     <span asp-validation-for="Name" class="text-danger small"></span>
                 </div>
 
-                <!-- MATÉRIA -->
                 <div class="mb-4">
                     <label asp-for="Matter" class="form-label fw-bold text-muted small">Matéria</label>
-
                     <div class="input-group">
                         <span class="input-group-text bg-light"><i class="fas fa-book"></i></span>
-                        <input asp-for="Matter"
-                               class="form-control form-control-lg bg-dark text-light border-secondary"
-                               list="matters-list"
-                               placeholder="Comece a digitar a matéria..."
-                               autocomplete="off" />
+                        <select asp-for="Matter"
+                                asp-items="Model.Matterlists"
+                                class="form-select form-select-lg">
+                            <option value="">Selecione uma matéria...</option>
+                        </select>
                     </div>
-
-                    <datalist id="matters-list">
-                        @foreach (var item in ViewBag.Matters)
-                        {
-                            <option value="@item"></option>
-                        }
-                    </datalist>
-
                     <span asp-validation-for="Matter" class="text-danger small"></span>
                 </div>
 
-                <!-- DATA DE NASCIMENTO -->
                 <div class="mb-4">
                     <label asp-for="Birth" class="form-label fw-bold text-muted small">Data de Nascimento</label>
                     <div class="input-group">
@@ -66,7 +50,6 @@
                     <span asp-validation-for="Birth" class="text-danger small"></span>
                 </div>
 
-                <!-- SALÁRIO -->
                 <div class="mb-4">
                     <label asp-for="Salary" class="form-label fw-bold text-muted small">Salário (R$)</label>
                     <div class="input-group">
@@ -76,30 +59,19 @@
                     <span asp-validation-for="Salary" class="text-danger small"></span>
                 </div>
 
-                <!-- ESCOLA -->
                 <div class="mb-4">
                     <label asp-for="SchoolName" class="form-label fw-bold text-muted small">Escola</label>
-
                     <div class="input-group">
                         <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
-                        <input asp-for="SchoolName"
-                               class="form-control form-control-lg bg-dark text-light border-secondary"
-                               list="schools-list"
-                               placeholder="Digite o nome da escola..."
-                               autocomplete="off" />
+                        <select asp-for="SchoolName"
+                                asp-items="Model.Schoollist"
+                                class="form-select form-select-lg">
+                            <option value="">Selecione a escola...</option>
+                        </select>
                     </div>
-
-                    <datalist id="schools-list">
-                        @foreach (var school in ViewBag.SchoolNames)
-                        {
-                            <option value="@school"></option>
-                        }
-                    </datalist>
-
                     <span asp-validation-for="SchoolName" class="text-danger small"></span>
                 </div>
 
-                <!-- BOTÕES -->
                 <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                     <a asp-action="Index" class="btn btn-outline-secondary px-4">
                         <i class="fas fa-times me-1"></i> Cancelar

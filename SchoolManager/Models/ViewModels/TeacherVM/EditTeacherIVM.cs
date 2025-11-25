@@ -1,4 +1,5 @@
-﻿using SchoolManager.Models.Enums;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SchoolManager.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManager.Models.ViewModels.TeacherVM
@@ -20,5 +21,8 @@ namespace SchoolManager.Models.ViewModels.TeacherVM
         [Required(ErrorMessage = "O nome da escola é obrigatório.")]
         public required string SchoolName { get; set; }
 
+
+        public IEnumerable<SelectListItem> Schoollist { get; set; }
+        public IEnumerable<SelectListItem> Matterlists { get; set; }
     }
 }
