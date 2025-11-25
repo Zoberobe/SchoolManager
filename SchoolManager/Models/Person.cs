@@ -5,21 +5,14 @@
         public string? Name { get; private set; }
         public DateOnly Birth { get; set; }
 
-        protected Person(string name) 
+        public void UpdateName(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Nome não Pode Ser Vazio!!", nameof(name));
+            }
+
             Name = name;
-        }
-
-        protected Person()
-        {
-            
-        }
-
-        public void UpdateName(string newName) 
-        {
-            if(string.IsNullOrWhiteSpace(newName)) 
-                throw new ArgumentException("O nome não pode ser vazio");
-            Name = newName;
         }
     }
 }

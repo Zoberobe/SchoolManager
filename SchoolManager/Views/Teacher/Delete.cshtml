@@ -1,0 +1,88 @@
+﻿@model DeleteTeacher
+
+@{
+    ViewData["Title"] = "Excluir Professor";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px;">
+
+        <!-- CABEÇALHO: Alerta de Exclusão -->
+        <div class="card-header bg-danger text-white d-flex align-items-center p-4"
+             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #dc3545, #b02a37);">
+
+            <div>
+                <h2 class="mb-0 fw-bold">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Excluir Professor
+                </h2>
+                <span class="opacity-75">Confirmação necessária</span>
+            </div>
+        </div>
+
+        <!-- CORPO -->
+        <div class="card-body p-4">
+            <p class="text-dark fs-5 mb-4">
+                Tem certeza de que deseja excluir este professor?
+                <br />
+              
+            </p>
+
+            <div class="row g-4">
+
+                <!-- Dados do Professor -->
+                <div class="col-md-12">
+                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
+                        <i class="fas fa-user-tie me-1"></i> Informações do Professor
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Nome</label>
+                        <div class="fs-5 text-dark">@Model.Name</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Matéria</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-book-open text-danger opacity-50 me-1"></i>
+                            @Model.Matter
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Salário</label>
+                        <div class="fs-5 fw-bold text-dark">
+                            @Html.DisplayFor(model => model.Salary)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Data de Nascimento</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-calendar-day text-danger opacity-50 me-1"></i>
+                            @Html.DisplayFor(model => model.Birth)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RODAPÉ -->
+        <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2"
+             style="border-radius: 0 0 10px 10px;">
+
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-arrow-left me-1"></i> Cancelar
+            </a>
+
+            <form asp-action="DeleteConfirmed" method="post" class="d-inline">
+                <input type="hidden" asp-for="Uuid" />
+
+                <button type="submit" class="btn btn-danger fw-bold px-4">
+                    <i class="fas fa-trash me-1"></i> Excluir
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>

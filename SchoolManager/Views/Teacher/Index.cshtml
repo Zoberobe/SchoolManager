@@ -1,0 +1,133 @@
+﻿@using SchoolManager.Models.ViewModels.TeacherVM
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+
+
+@model IPagedList<IndexTeacherIVM>
+
+
+@{
+    ViewData["Title"] = "Lista de Professores";
+}
+
+<!-- CDN FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container mt-5">
+
+    <!-- CARD PRINCIPAL -->
+    <div class="card shadow-lg border-0">
+
+        <!-- CABEÇALHO -->
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center 
+                            align-items-center me-3" style="width: 45px; height: 45px;">
+                    <i class="fas fa-chalkboard-teacher fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold text-dark">Professores Cadastrados</h5>
+                    <small class="text-muted">Gerencie os professores da escola</small>
+                </div>
+            </div>
+
+            <a asp-action="Create" class="btn btn-primary fw-bold shadow-sm">
+                <i class="fas fa-plus me-2"></i> Novo Professor
+            </a>
+        </div>
+
+        <!-- TABELA -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3">Nome</th>
+                            <th class="py-3">Matéria</th>
+                            <th class="py-3 text-end pe-4">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <!-- NOME -->
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light border d-flex justify-content-center 
+                                                    align-items-center me-3 text-secondary"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold text-dark">@item.Name</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- MATÉRIA -->
+                                <td class="fw-semibold text-dark">
+                                    @item.Matter
+                                </td>
+
+                               
+
+                                <!-- AÇÕES -->
+                                <td class="text-end pe-4">
+                                    <div class="btn-group shadow-sm" role="group">
+
+                                        <a asp-action="Edit"
+                                           asp-route-uuid="@item.Uuid"
+                                           class="btn btn-sm btn-outline-warning"
+                                           title="Editar">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+
+                                        <a asp-action="Details"
+                                           asp-route-uuid="@item.Uuid"
+                                           class="btn btn-sm btn-outline-info"
+                                           title="Detalhes">
+                                            <i class="fas fa-info-circle"></i>
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-uuid="@item.Uuid"
+                                           class="btn btn-sm btn-outline-danger"
+                                           title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        @Html.PagedListPager(
+        Model,
+        page => Url.Action("Index", new { page }),
+                new PagedListRenderOptions
+                {
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                    MaximumPageNumbersToDisplay = 5,
+                    ClassToApplyToFirstListItemInPager = "page-item",
+                    ClassToApplyToLastListItemInPager = "page-item",
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" }
+                }
+                )
+    </div>
+
+
+</div>

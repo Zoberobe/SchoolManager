@@ -2,19 +2,19 @@
 {
     public enum Matter
     {
-        Mathematics,
-        Physics,
-        Chemistry,
-        Biology,
-        History,
-        Geography,
-        Literature,
-        Art,
-        Music,
-        PhysicalEducation,
-        ComputerScience,
-        Economics,
-        Philosophy,
-        Psychology
+        Matemática,
+        Física,
+        Química,
+        Biologia,
+        História,
+        Geografia,
+        Literatura,
+        Arte,
+        Música,
+        Educação,
+        Fisica,
+        Economia,
+        Filosofia,
+        Psicologia
     }
 }
