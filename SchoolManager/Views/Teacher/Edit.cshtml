@@ -55,7 +55,7 @@
                                    autocomplete="off" />
 
                             <datalist id="matters-list">
-                                @if (ViewBag.Matters != null)
+                                @if (ViewBag.Matters.Count > 0)
                                 {
                                     foreach (var matterName in ViewBag.Matters)
                                     {

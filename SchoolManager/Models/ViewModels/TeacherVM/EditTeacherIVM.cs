@@ -22,7 +22,7 @@ namespace SchoolManager.Models.ViewModels.TeacherVM
         public required string SchoolName { get; set; }
 
 
-        public IEnumerable<SelectListItem> Schoollist { get; set; }
-        public IEnumerable<SelectListItem> Matterlists { get; set; }
+        public IEnumerable<SelectListItem> Schoollist { get; set; } = [];
+        public IEnumerable<SelectListItem> Matterlists { get; set; } = [];
     }
 }
