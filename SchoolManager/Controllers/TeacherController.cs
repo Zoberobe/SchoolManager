@@ -44,7 +44,7 @@ namespace SchoolManager.Controllers
                 Schoollist = await GetSchoolSelectList(cancellationToken),
                 Matterlists = GetMatterSelectList()
             };
-            return View();
+            return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -85,8 +85,8 @@ namespace SchoolManager.Controllers
         public async Task<IActionResult> Edit(Guid uuid, CancellationToken cancellationToken)
         {
             var teacher = await _context.Teachers
-                                        .Include(t => t.School)
-                                        .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
+                                    .Include(t => t.School)
+                                    .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
 
             if (teacher == null) return View();
 
@@ -99,7 +99,7 @@ namespace SchoolManager.Controllers
                 InputSalary = teacher.Salary,
                 SchoolName = teacher.School?.Name ?? "",
 
-                // Popula as listas
+                // Aqui você já está passando os dados corretamente para o Model
                 Matterlists = GetMatterSelectList(),
                 Schoollist = await GetSchoolSelectList(cancellationToken)
             };
@@ -122,7 +122,7 @@ namespace SchoolManager.Controllers
             }
 
             var dbTeacherToUpdate = await _context.Teachers.FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
-            if (dbTeacherToUpdate == null) return NotFound();
+            if (dbTeacherToUpdate == null) return View();
 
             var school = await _context.Schools.FirstOrDefaultAsync(s => s.Name == model.SchoolName, cancellationToken);
 
@@ -145,13 +145,13 @@ namespace SchoolManager.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-       
+
 
         [HttpGet]
         public async Task<IActionResult> Delete(Guid uuid, CancellationToken cancellationToken)
         {
             var teacher = await _context.Teachers
-                                        .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
+                .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
 
             if (teacher == null)
                 return NotFound();
@@ -173,29 +173,26 @@ namespace SchoolManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid uuid, CancellationToken cancellationToken)
         {
             var teacher = await _context.Teachers
-                                        .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
+                .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
 
             if (teacher == null)
                 return NotFound();
 
             teacher.MarkAsDeleted();
-
-            _context.Teachers.Update(teacher);
             await _context.SaveChangesAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
         public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
         {
             var teacher = await _context.Teachers
-                                        .Include(t => t.School)
-                                        .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
+                .Include(t => t.School)
+                .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
+
             if (teacher == null)
                 return NotFound();
+
             var model = new DetailsTeacherIVM
             {
                 Name = teacher.Name,
@@ -204,8 +201,8 @@ namespace SchoolManager.Controllers
                 Salary = teacher.Salary,
                 SchoolName = teacher.School?.Name ?? "N/A"
             };
-            return View(model);
 
+            return View(model);
         }
 
 

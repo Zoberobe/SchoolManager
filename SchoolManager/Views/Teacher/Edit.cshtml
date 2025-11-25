@@ -19,7 +19,7 @@
         <div class="card-body p-4">
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Uuid" />
 
                 <!-- SEÇÃO 1: DADOS PESSOAIS -->
                 <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
@@ -57,9 +57,9 @@
                             <datalist id="matters-list">
                                 @if (ViewBag.Matters.Count > 0)
                                 {
-                                    foreach (var matterName in ViewBag.Matters)
+                                    foreach (var item in Model.Matterlists)
                                     {
-                                        <option value="@matterName"></option>
+                                        <option value="@item.Value"></option>
                                     }
                                 }
                             </datalist>
