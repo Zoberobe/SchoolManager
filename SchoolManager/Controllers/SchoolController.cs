@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SchoolManager.Data;
 using SchoolManager.Models;
-using SchoolManager.Models.ViewModels;
+using SchoolManager.Models.ViewModels.SchoolVM; // Assumindo que IndexSchoolVM e DetailsSchoolVM existem
+using X.PagedList.Extensions;
 
 namespace SchoolManager.Controllers
 {
@@ -15,23 +17,39 @@ namespace SchoolManager.Controllers
             _context = context;
         }
 
-        //A parada não tá funcionado!!!
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(int? page, CancellationToken cancellationToken)
         {
-            var schools = _context.Schools.ToListAsync(cancellationToken);
+            
+            int pageSize = 10; 
+            int pageNumber = page ?? 1; 
 
-            var model = schools.Result.Select(school => new IndexSchoolVM
+
+            var schoolsQuery = _context.Schools
+                .Where(s => s.IsDeleted == false)
+                .OrderBy(s => s.Name);
+
+
+            var schools = await schoolsQuery.ToListAsync(cancellationToken);
+
+
+            var model = schools.Select(school => new IndexSchoolVM
             {
-                Id = school.Id,
+                Uuid = school.Uuid,
                 Name = school.Name,
                 City = school.City
-            }).ToList();
+            });
 
-            return View(model);
+           
+            var pagedList = model.ToPagedList(pageNumber, pageSize);
+
+            
+            return View(pagedList);
         }
 
-        public async Task<IActionResult> Create()
+
+        public IActionResult Create()
         {
+
             return View();
         }
 
@@ -39,53 +57,130 @@ namespace SchoolManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IndexSchoolVM model, CancellationToken cancellationToken)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             var administrator = await _context.Administrators.FirstOrDefaultAsync(cancellationToken);
-
-            if (administrator == null)
+            if (administrator is null)
             {
-                ModelState.AddModelError(string.Empty, "No administrator found.");
+                ModelState.AddModelError(string.Empty, "Administrador não encontrado para associar à escola.");
                 return View(model);
             }
+            var school = new School(model.Name, model.City, administrator);
 
 
-            var school = new School
-            {
-                Name = model.Name,
-                City = model.City,
-                Administrator = administrator,
-            };
 
             await _context.Schools.AddAsync(school, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
-
-        public async Task<IActionResult> Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
         {
-            return View();
-        }
+            var school = await _context.Schools.FirstOrDefaultAsync(ec => ec.Uuid == uuid, cancellationToken);
 
-        public async Task<IActionResult> Edit()
-        {
-            return View();
-        }
+            if (school is null)
+            {
+                ModelState.AddModelError(string.Empty, "Detalhes não encontrado");
+                return View();
+            }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditSchoolVM model)
-        {
+            var model = new DetailsSchoolVM
+            {
+                Uuid = school.Uuid,
+                Name = school.Name,
+                City = school.City
+            };
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Edit(Guid uuid, CancellationToken cancellationToken)
         {
-            return View();
+            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == uuid, cancellationToken);
+
+            if (school is null)
+            {
+                ModelState.AddModelError(string.Empty, "Edit não encontrado");
+                return View();
+            }
+
+            var model = new EditSchoolVM
+            {
+                Uuid = school.Uuid
+            };
+
+            return View(model);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditSchoolVM model, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == model.Uuid, cancellationToken);
+            if (school is null)
+            {
+                ModelState.AddModelError(string.Empty, "Escola não encontrada");
+                return View(model);
+            }
+            school.Edit(model.Name, model.City);
+
+            _context.Schools.Update(school);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return RedirectToAction(nameof(Index));
+
+        }
+        public async Task<IActionResult> Delete(Guid uuid, CancellationToken cancellationToken)
+        {
+            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == uuid, cancellationToken);
+
+            if (school is null)
+            {
+                ModelState.AddModelError(string.Empty, "Edit não encontrado");
+                return View();
+            }
+
+            var model = new DeleteSchoolVM
+            {
+                Uuid = school.Uuid
+            };
+
+            return View(model);
+        }
+        [HttpDelete]
+        [HttpPost, ActionName("Deletar")]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> Delete(DeleteSchoolVM model, CancellationToken cancellationToken)
+        {
+            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == model.Uuid, cancellationToken);
+            if (school is null)
+            {
+                ModelState.AddModelError(string.Empty, "Escola não encontrada");
+                return View();
+            }
+
+            school.MarkAsDeleted();
+            _context.Schools.Update(school);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        public ActionResult Link()
+        {
+            return Redirect("http://www.google.com.br/search?q=%s");
+        }
+
     }
 }
