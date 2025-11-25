@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolManager.Models;
-using SchoolManager.Models.ViewModels.TeacherVM;
 
 namespace SchoolManager.Data
 {

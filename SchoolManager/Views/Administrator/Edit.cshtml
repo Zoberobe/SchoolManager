@@ -1,0 +1,84 @@
+﻿@model SchoolManager.Models.ViewModels.AdministratorVM.EditAdministratorVM
+
+@{
+    ViewData["Title"] = "Editar Administrador";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
+
+        <!-- CABEÇALHO -->
+        <div class="card-header bg-primary text-white d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
+            <i class="fas fa-user-tie fa-2x me-3"></i>
+            <div>
+                <h3 class="mb-0 fw-bold">Editar Administrador</h3>
+                <small class="text-light opacity-75">Atualize as informações abaixo.</small>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <!-- Campo oculto -->
+                <input type="hidden" asp-for="Uuid" />
+
+                <!-- SEÇÃO: DADOS DO ADMINISTRADOR -->
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-id-card me-1"></i> Dados do Administrador
+                </h5>
+
+                <!-- Nome -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Nome completo..." />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Capital -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Capital" class="form-label fw-bold text-muted small">Capital (R$)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-success">R$</span>
+                            <input asp-for="Capital" class="form-control" placeholder="Ex: 1200,00" />
+                        </div>
+                        <span asp-validation-for="Capital" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Birth" class="form-label fw-bold text-muted small">Data de Nascimento</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-calendar"></i></span>
+                            <input asp-for="Birth" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Birth" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- BOTÕES -->
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i> Salvar Alterações
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

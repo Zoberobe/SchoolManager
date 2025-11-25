@@ -1,18 +1,27 @@
-﻿namespace SchoolManager.Models
+﻿using System.Net.Sockets;
+
+namespace SchoolManager.Models
 {
     public abstract class Person : EntityBase
     {
-        public string? Name { get; private set; }
-        public DateOnly Birth { get; set; }
+        public string Name { get; private set; }
+        public DateOnly Birth { get; private set; }
 
-        public void UpdateName(string name)
+        public Person() { }
+        protected Person(string name, DateOnly birth)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Nome não Pode Ser Vazio!!", nameof(name));
-            }
-
             Name = name;
+            Birth = birth;
+        }
+
+       protected void UpdateName(string name)
+        {
+            Name = name;
+        }
+
+        protected void UpdateBirth(DateOnly birth)
+        {
+            Birth = birth;
         }
     }
 }
