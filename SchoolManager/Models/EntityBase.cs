@@ -6,6 +6,11 @@
         public Guid Uuid { get; init; } = Guid.NewGuid();
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; init; }
-        public bool IsDeleted { get; init; }
+        public bool IsDeleted { get; private set; }
+
+        public void MarkAsDeleted()
+        {
+            IsDeleted = true;
+        }
     }
 }

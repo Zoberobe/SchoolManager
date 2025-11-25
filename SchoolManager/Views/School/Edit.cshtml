@@ -1,0 +1,91 @@
+﻿@using SchoolManager.Models.ViewModels.SchoolVM
+@model EditSchoolVM
+
+@{
+    ViewData["Title"] = "Editar Escola";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- CDN FontAwesome (Garantindo que os ícones funcionem) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container mt-5 d-flex justify-content-center">
+    <!-- Ajustando o tamanho máximo do formulário -->
+    <div class="card shadow-lg border-0 rounded-3" style="width: 100%; max-width: 700px;">
+
+        <!-- CABEÇALHO (Cor de Edição: Warning/Amarelo) -->
+        <div class="card-header bg-warning text-dark d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
+            <i class="fas fa-school fa-2x me-3"></i>
+            <div>
+                <h3 class="mb-0 fw-bold">Editar Escola</h3>
+                <small class="text-dark opacity-75">Atualize o nome e a cidade da instituição.</small>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Edit">
+
+                <!-- Oculto: ID da Escola para o POST -->
+                <input type="hidden" asp-for="Uuid" />
+
+                <!-- Resumo da Validação -->
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <!-- SEÇÃO 1: DADOS DA ESCOLA -->
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-building me-1"></i> Dados Principais
+                </h5>
+
+                <div class="row g-3 mb-4">
+
+                    <!-- CAMPO NOME -->
+                    <div class="col-md-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome da Escola</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-signature"></i></span>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Ex: Escola Estadual Machado de Assis" />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- CAMPO CIDADE -->
+                    <div class="col-md-12">
+                        <label asp-for="City" class="form-label fw-bold text-muted small">Cidade</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-city"></i></span>
+                            <input asp-for="City" class="form-control form-control-lg" placeholder="Ex: São Paulo" />
+                        </div>
+                        <span asp-validation-for="City" class="text-danger small"></span>
+                    </div>
+
+                    <!--
+                        Se a sua VM tivesse outras propriedades como Administrator,
+                        você as adicionaria aqui com o mesmo estilo de input-group.
+                    -->
+
+                </div>
+
+                <!-- BOTÕES -->
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-arrow-left me-1"></i> Voltar à Lista
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i> Salvar Alterações
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Garante que a validação cliente-side funcione
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

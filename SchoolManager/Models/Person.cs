@@ -2,7 +2,7 @@
 {
     public abstract class Person : EntityBase
     {
-        public required string Name { get; init; }
+        public required string Name { get; set; }
         public DateOnly Birth { get; set; }
     }
 }
