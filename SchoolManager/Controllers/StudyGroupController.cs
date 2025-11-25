@@ -24,7 +24,6 @@ namespace SchoolManager.Controllers
                 .Where(s => s.IsDeleted == false)
                 .OrderBy(s => s.Id);
 
-
             var studygroup = await studygroupQuery.ToListAsync(cancellationToken);
 
 
@@ -37,8 +36,43 @@ namespace SchoolManager.Controllers
                 // Students = a.Students
             });
             return View(model);
+        }
+        public async Task<IActionResult> Create(CancellationToken cancellationToken)
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Create(CancellationToken cancellationToken)
+        {
+            return View();
+        }
 
+        public async Task<IActionResult> Edit(CancellationToken cancellationToken)
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(CancellationToken cancellationToken)
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Details(CancellationToken cancellationToken)
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Delete(CancellationToken cancellationToken)
+        {
+            return View();
+        }
+
+        
+        [HttpPost]
+        public async Task<IActionResult> DeletConfirmed(CancellationToken cancellationToken)
+        {
+            return View();
         }
 
     }
