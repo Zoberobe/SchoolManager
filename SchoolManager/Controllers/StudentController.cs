@@ -80,10 +80,32 @@ namespace SchoolManager.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(Guid? studyGroupUuid, CancellationToken cancellationToken)
         {
             var viewModel = new StudentFormViewModel();
-            await ViewStudents(viewModel); // Chamada corrigida
+
+            if (studyGroupUuid.HasValue)
+            {
+                var selectedGroup = await _context.StudyGroups
+                    .Include(g => g.School) 
+                    .FirstOrDefaultAsync(g => g.Uuid == studyGroupUuid, cancellationToken);
+                    viewModel.Origin = "studygroup";
+
+                if (selectedGroup != null)
+                {
+                    
+                    viewModel.SchoolUuid = selectedGroup.School.Uuid;
+                    viewModel.StudyGroupUuid = selectedGroup.Uuid;
+                }
+            }
+            else
+            {
+                viewModel.Origin = "student"; 
+            }
+
+
+                await ViewStudents(viewModel, cancellationToken);
+
             return View(viewModel);
         }
 
@@ -92,7 +114,7 @@ namespace SchoolManager.Controllers
         //Criar um novo estudante
         public async Task<IActionResult> Create(StudentFormViewModel viewModel, CancellationToken cancellationToken)
         {
-            // Regra do Bolsista
+            // 1. Regra do Bolsista (Limpa mensalidade)
             if (viewModel.IsScholarshipRecipient)
             {
                 viewModel.MonthlyFee = 0;
@@ -102,8 +124,6 @@ namespace SchoolManager.Controllers
             if (ModelState.IsValid)
             {
                 var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid, cancellationToken);
-
-                
                 var studyGroup = await _context.StudyGroups.FirstOrDefaultAsync(g => g.Uuid == viewModel.StudyGroupUuid, cancellationToken);
 
                 if (school == null || studyGroup == null)
@@ -113,22 +133,37 @@ namespace SchoolManager.Controllers
                 }
                 else
                 {
+                    
+                    if (studyGroup.SchoolId != school.Id)
+                    {
+                        ModelState.AddModelError("StudyGroupUuid", "A turma selecionada não pertence à escola informada.");
+                        await ViewStudents(viewModel, cancellationToken);
+                        return View(viewModel);
+                    }
+
                     var student = new Student(
                         viewModel.Name,
                         DateOnly.FromDateTime(DateTime.Now),
                         viewModel.MonthlyFee,
                         viewModel.IsScholarshipRecipient,
-                        school.Id,     
-                        studyGroup.Id  
+                        school.Id,
+                        studyGroup.Id
                     );
 
                     _context.Add(student);
                     await _context.SaveChangesAsync(cancellationToken);
+
+                    if (viewModel.Origin == "studygroup")
+                    {
+                        return RedirectToAction("Index", "StudyGroup");
+                    }
+
+                 
                     return RedirectToAction(nameof(Index));
                 }
             }
 
-            // Recarrega os dropdowns em caso de erro
+           
             await ViewStudents(viewModel, cancellationToken);
             return View(viewModel);
         }
@@ -247,33 +282,38 @@ namespace SchoolManager.Controllers
         }
 
 
-        private async Task ViewStudents(StudentFormViewModel viewModel, CancellationToken cancellationToken = default)
+        private async Task ViewStudents(StudentFormViewModel viewModel, CancellationToken cancellationToken)
         {
-            // Carrega escolas
-            var schools = await _context.Schools.OrderBy(x => x.Name).ToListAsync(cancellationToken);
+            var schools = await _context.Schools
+                .Where(s => !s.IsDeleted)
+                .OrderBy(s => s.Name)
+                .ToListAsync(cancellationToken);
+
             viewModel.SchoolsList = new SelectList(schools, "Uuid", "Name", viewModel.SchoolUuid);
 
-            // Lógica de Grupos
-            var groups = new List<object>();
-
+   
             if (viewModel.SchoolUuid != Guid.Empty)
             {
-                var school = schools.FirstOrDefault(s => s.Uuid == viewModel.SchoolUuid);
+                var selectedSchool = schools.FirstOrDefault(s => s.Uuid == viewModel.SchoolUuid);
 
-                if (school != null)
+                if (selectedSchool != null)
                 {
-                    groups = await _context.StudyGroups
-                        .Where(g => g.SchoolId == school.Id)
-                        .Include(g => g.Teacher)
-                        .Select(g => new
-                        {
-                            DisplayName = $"{g.Teacher.Name} - {g.InitialDate.Year}"
-                        })
-                        .ToListAsync<object>(cancellationToken);
+                    var studyGroups = await _context.StudyGroups
+                        .Where(g => g.SchoolId == selectedSchool.Id && !g.IsDeleted)
+                        .OrderBy(g => g.Name)
+                        .ToListAsync(cancellationToken);
+
+                    viewModel.StudyGroupsList = new SelectList(studyGroups, "Uuid", "Name", viewModel.StudyGroupUuid);
+                }
+                else
+                {
+                    viewModel.StudyGroupsList = new SelectList(new List<StudyGroup>(), "Uuid", "Name");
                 }
             }
-
-            viewModel.StudyGroupsList = new SelectList(groups, "Uuid", "DisplayName", viewModel.StudyGroupUuid);
+            else
+            {
+                viewModel.StudyGroupsList = new SelectList(new List<StudyGroup>(), "Uuid", "Name");
+            }
         }
 
         [HttpGet]
@@ -288,16 +328,15 @@ namespace SchoolManager.Controllers
             }
 
             var groups = await _context.StudyGroups
-                .Where(g => g.SchoolId == school.Id) 
-                .Include(g => g.Teacher) 
+                .Where(g => g.SchoolId == school.Id)
+                .Where(g => g.Teacher.IsDeleted == false)
+                .Include(g => g.Teacher)
                 .Select(g => new
                 {
-                    
-                    value = g.Uuid, 
-                    text = $"{g.Teacher.Name} - {g.InitialDate.Year}" 
+                    value = g.Uuid,
+                    text = $"{g.Teacher.Name} - {g.InitialDate.Year}"
                 })
                 .ToListAsync();
-
 
             return Json(groups);
         }

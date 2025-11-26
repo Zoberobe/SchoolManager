@@ -3,12 +3,14 @@
     public class IndexStudyGroupVM
     {
 
-        public required int Id { get; init; }
-        public required Guid Uuid { get; init; }
-        public required Teacher Teacher { get; init; } 
-        public virtual ICollection<Student> Students { get; private set; } = new List<Student>();
-        public int SchoolId { get; set; }
+        public Guid Uuid { get; set; }
+        public string Name { get; set; }    
+        public string SchoolName { get; set; }  
+        public string TeacherName { get; set; } 
+        public int StudentsCount { get; set; }   
+        public DateTime InitialDate { get; set; }
+        public DateTime FinalDate { get; set; }
 
-  
+
     }
 }

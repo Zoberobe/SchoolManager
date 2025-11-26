@@ -33,6 +33,7 @@ namespace SchoolManager.ViewModels
         public string? SchoolName { get; set; }
         public string? StudyGroupName { get; set; }
         public string? TeacherName { get; set; }
+        public string? Origin { get; set;  }
         public IEnumerable<SelectListItem> SchoolsList { get; set; } = [];
         public IEnumerable<SelectListItem> StudyGroupsList { get; set; } = [];
     }

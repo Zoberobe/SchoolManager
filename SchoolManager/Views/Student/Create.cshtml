@@ -1,131 +1,208 @@
 ﻿@model SchoolManager.ViewModels.StudentFormViewModel
 
 @{
-    ViewData["Title"] = "Adicionar um Estudante";
+    ViewData["Title"] = "Novo Estudante";
 }
 
-<h1>Novo estudante</h1>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
 
-<h4>Formulário de um novo estudante</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+        <div class="card-header bg-success text-white d-flex align-items-center p-4"
+             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #198754, #146c43);">
+            <div class="me-3">
+                <div class="bg-white text-success rounded-circle d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                    <i class="fas fa-user-plus fa-2x"></i>
+                </div>
             </div>
-
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsScholarshipRecipient" id="chkScholarship" />
-                    @Html.DisplayNameFor(model => model.IsScholarshipRecipient)
-                </label>
+            <div>
+                <h3 class="mb-0 fw-bold">Novo Estudante</h3>
+                <span class="opacity-75">Preencha os dados abaixo para realizar a matrícula.</span>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="MonthlyFee" class="control-label"></label>
-                <input asp-for="MonthlyFee" class="form-control" id="txtMonthlyFee" />
-                <span asp-validation-for="MonthlyFee" class="text-danger"></span>
-            </div>
+        <div class="card-body p-4">
+            <form asp-action="Create">
+                <input type="hidden" asp-for="Origin" />
 
-            <div class="form-group">
-                <label asp-for="SchoolUuid" class="control-label"></label>
-                <select asp-for="SchoolUuid" class="form-control" asp-items="ViewBag.Schools" id="SchoolUuid">
-                    <option value="">-- Selecione a Escola --</option>
-                </select>
-                <span asp-validation-for="SchoolUuid" class="text-danger"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm" role="alert"></div>
 
-            <div class="form-group">
-                <label asp-for="StudyGroupUuid" class="control-label"></label>
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-id-card me-1"></i> Dados Pessoais
+                </h5>
 
-                <select asp-for="StudyGroupUuid" class="form-control" asp-items="ViewBag.StudyGroups" id="StudyGroupUuid">
-                    <option value="">-- Selecione uma Escola Primeiro --</option>
-                </select>
-                <span asp-validation-for="StudyGroupUuid" class="text-danger"></span>
-            </div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Ex: João da Silva" />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Criar" class="btn btn-primary" />
-            </div>
-        </form>
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-graduation-cap me-1"></i> Acadêmico
+                </h5>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="SchoolUuid" class="form-label fw-bold text-muted small">Escola</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
+                            <select asp-for="SchoolUuid" class="form-select" asp-items="Model.SchoolsList" id="SchoolUuid">
+                                <option value="">-- Selecione a Escola --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="SchoolUuid" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="StudyGroupUuid" class="form-label fw-bold text-muted small">Turma</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-users"></i></span>
+                            <select asp-for="StudyGroupUuid" class="form-select" asp-items="Model.StudyGroupsList" id="StudyGroupUuid">
+                                <option value="">-- Selecione uma Escola Primeiro --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="StudyGroupUuid" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-hand-holding-usd me-1"></i> Financeiro
+                </h5>
+
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-light d-flex align-items-center h-100">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsScholarshipRecipient" id="chkScholarship" style="cursor: pointer; transform: scale(1.3);">
+                                <label class="form-check-label ms-3 fw-bold text-dark" for="chkScholarship" style="cursor: pointer;">
+                                    O aluno é bolsista?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="divMonthlyFeeContainer">
+                        <label asp-for="MonthlyFee" class="form-label fw-bold text-muted small">Valor da Mensalidade (R$)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-success">R$</span>
+                            <input asp-for="MonthlyFee" class="form-control" id="txtMonthlyFee" placeholder="0,00" />
+                        </div>
+                        <span asp-validation-for="MonthlyFee" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    @if (Model.Origin == "studygroup")
+                    {
+                        <a asp-controller="StudyGroup" asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-1"></i> Voltar à Lista
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-1"></i> Voltar à Lista
+                        </a>
+                    }
+
+                    <button type="submit" class="btn btn-success px-5 fw-bold shadow-sm">
+                        <i class="fas fa-check me-1"></i> Cadastrar Aluno
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Voltar para todos os alunos</a>
-</div>
-
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <script>
+        // Validações numéricas
+        $.validator.methods.range = function (value, element, param) {
+            var globalizedValue = value.replace(",", ".");
+            return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+        }
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
         $(document).ready(function () {
 
+            // 1. Captura o ID da Turma para re-seleção automática
+            var preSelectedGroupUuid = '@Model.StudyGroupUuid';
+
+            // 2. Lógica do Bolsista
             function toggleFee() {
                 var isChecked = $("#chkScholarship").is(":checked");
+                var feeContainer = $("#divMonthlyFeeContainer");
                 var feeInput = $("#txtMonthlyFee");
-                var feeContainer = feeInput.closest(".form-group");
 
                 if (isChecked) {
-
-                    feeContainer.hide();
+                    feeContainer.fadeOut(200);
                     feeInput.val(0);
                 } else {
-
-                    feeContainer.show();
-
-
-                    if (feeInput.val() == 0) {
-                        feeInput.val('');
-                    }
+                    feeContainer.fadeIn(200);
+                    if (feeInput.val() == 0 || feeInput.val() == "0,00") feeInput.val('');
                 }
             }
-
-
             toggleFee();
+            $("#chkScholarship").change(toggleFee);
 
-
-            $("#chkScholarship").change(function () {
-                toggleFee();
-            });
-
-
+            // 3. Lógica Cascading Dropdown (Escola -> Turma)
             $("#SchoolUuid").change(function () {
-              var selectedSchoolUuid = $(this).val();
-              var groupsDropdown = $("#StudyGroupUuid");
+                var selectedSchoolUuid = $(this).val();
+                var groupsDropdown = $("#StudyGroupUuid");
 
                 groupsDropdown.empty();
                 groupsDropdown.append('<option value="">Carregando turmas...</option>');
 
                 if (selectedSchoolUuid) {
+                    $.ajax({
+                        url: '@Url.Action("GetStudyGroupsBySchool", "Student")',
+                        type: 'GET',
+                        data: { schoolUuid: selectedSchoolUuid },
+                        success: function (data) {
+                            groupsDropdown.empty();
+                            groupsDropdown.append('<option value="">-- Selecione a Turma --</option>');
 
-                   $.ajax({
-                     url: '@Url.Action("GetStudyGroupsBySchool", "Student")',
-                     type: 'GET',
-                     data: { schoolUuid: selectedSchoolUuid },
-                     success: function (data) {
-                     groupsDropdown.empty();
-                     groupsDropdown.append('<option value="">-- Selecione a Turma --</option>');
-                        $.each(data, function (index, item) {
-                          groupsDropdown.append($('<option>', {
-                          value: item.value,
-                          text: item.text
-                          }));
-                          });
-                          }
-                       });
-                 } else {
-                  groupsDropdown.empty();
-                  groupsDropdown.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
-                  }
-                 });
-              });
+                            $.each(data, function (index, item) {
+                                groupsDropdown.append($('<option>', {
+                                    value: item.value,
+                                    text: item.text
+                                }));
+                            });
+
+                            // Se tinhamos uma turma na memória, seleciona ela agora
+                            if (preSelectedGroupUuid) {
+                                groupsDropdown.val(preSelectedGroupUuid);
+                                preSelectedGroupUuid = null; // Limpa para o futuro
+                            }
+                        },
+                        error: function () {
+                            groupsDropdown.empty();
+                            groupsDropdown.append('<option value="">Erro ao carregar</option>');
+                        }
+                    });
+                } else {
+                    groupsDropdown.empty();
+                    groupsDropdown.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
+                }
+            });
+
+            // 4. Gatilho Inicial: Se já tem escola, busca as turmas
+            if ($("#SchoolUuid").val()) {
+                $("#SchoolUuid").trigger('change');
+            }
+        });
     </script>
 }
