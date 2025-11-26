@@ -26,5 +26,6 @@ namespace SchoolManager.Models
             TeacherId = teacherId;
         }
 
+        public StudyGroup() { }
     }
 }

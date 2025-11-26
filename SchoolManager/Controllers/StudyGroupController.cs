@@ -106,17 +106,49 @@ namespace SchoolManager.Controllers
         //    return View();
         //}
 
-        public async Task<IActionResult> Details(CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(Guid? id, CancellationToken cancellationToken)
         {
-            return View();
-        }
+            if (id == null) return View();
 
-        public async Task<IActionResult> Delete(CancellationToken cancellationToken)
+            var studyGroup = await _context.StudyGroups
+                .Include(s => s.Teacher)
+                .Include(s => s.School) 
+                .Include(s => s.Students)
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+
+            if (studyGroup == null) return View();
+            string groupName = studyGroup.Name ?? "Grupo sem nome";
+                var viewModel = new DeleteStudyGroupVM
+            {
+                Uuid = studyGroup.Uuid,
+                Name = groupName,
+                InitialDate = studyGroup.InitialDate,
+                FinalDate = studyGroup.FinalDate,
+                SchoolName = studyGroup.School?.Name ?? "Escola não encontrada",
+                TeacherName = studyGroup.Teacher?.Name ?? "Professor não encontrado",
+                StudentCount = studyGroup.Students.Count
+            };
+
+            return View(viewModel);
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
         {
-            return View();
+            if (id == Guid.Empty)
+            {
+                return BadRequest("ID inválido fornecido para exclusão.");
+            }
+            var studyGroup = await _context.StudyGroups
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+            if (studyGroup == null)
+            {
+                return NotFound();
+            }
+            studyGroup.MarkAsDeleted();
+            await _context.SaveChangesAsync(cancellationToken);
+            return RedirectToAction(nameof(Index));
         }
-
-        
         [HttpPost]
         public async Task<IActionResult> DeletConfirmed(CancellationToken cancellationToken)
         {

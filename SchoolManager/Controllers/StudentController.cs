@@ -120,7 +120,6 @@ namespace SchoolManager.Controllers
                 viewModel.MonthlyFee = 0;
                 ModelState.Remove("MonthlyFee");
             }
-
             if (ModelState.IsValid)
             {
                 var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == viewModel.SchoolUuid, cancellationToken);
