@@ -139,26 +139,26 @@ namespace SchoolManager.Controllers
         }
         public async Task<IActionResult> Delete(Guid uuid, CancellationToken cancellationToken)
         {
-            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == uuid, cancellationToken);
+            var school = await _context.Schools
+                .AsNoTracking() // Adicione AsNoTracking para performance, pois é só leitura
+                .FirstOrDefaultAsync(s => s.Uuid == uuid, cancellationToken);
 
-            if (school is null)
+            if (school == null)
             {
-                ModelState.AddModelError(string.Empty, "Edit não encontrado");
-                return View();
+ 
+                return NotFound();
             }
-
             var model = new DeleteSchoolVM
             {
-                Uuid = school.Uuid
+                Uuid = school.Uuid,
+                Name = school.Name 
             };
 
             return View(model);
         }
-        [HttpDelete]
-        [HttpPost, ActionName("Deletar")]
-        [ValidateAntiForgeryToken]
+        [HttpPost]
 
-        public async Task<IActionResult> Delete(DeleteSchoolVM model, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteConfirmed(DeleteSchoolVM model, CancellationToken cancellationToken)
         {
             var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == model.Uuid, cancellationToken);
             if (school is null)

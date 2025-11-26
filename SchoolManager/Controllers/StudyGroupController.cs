@@ -104,13 +104,13 @@ namespace SchoolManager.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
+        public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
         {
             var studyGroup = await _context.StudyGroups
                 .AsNoTracking()
                 .Include(s => s.Students)
                 .Include(t => t.Teacher)
-                .FirstOrDefaultAsync(ec => ec.Uuid == uuid, cancellationToken);
+                .FirstOrDefaultAsync(ec => ec.Uuid == id, cancellationToken);
 
             if (studyGroup is null)
             {
@@ -161,8 +161,7 @@ namespace SchoolManager.Controllers
 
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
         {
             if (id == Guid.Empty)

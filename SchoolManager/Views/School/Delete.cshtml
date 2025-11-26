@@ -24,8 +24,8 @@
 
         <div class="card-body p-4">
             <p class="text-dark fs-5 mb-4">
-                Tem certeza de que deseja excluir a escola **@Model.Name**?
-                Esta ação é **irreversível**.
+                Tem certeza de que deseja excluir a escola @Model.Name?
+                Esta ação é irreversível.
             </p>
 
             <div class="row g-4">
@@ -58,7 +58,7 @@
         <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2"
              style="border-radius: 0 0 10px 10px;">
 
-            <form asp-action="Delete" method="post" class="d-inline">
+            <form asp-action="DeleteConfirmed" method="post" class="d-inline">
 
                 <input type="hidden" asp-for="Uuid" />
 
