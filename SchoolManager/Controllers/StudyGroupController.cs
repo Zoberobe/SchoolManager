@@ -97,11 +97,78 @@ namespace SchoolManager.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Edit(Guid? id, CancellationToken cancellationToken)
+        {
+            if (id == null) return NotFound();
+
+            var studyGroup = await _context.StudyGroups
+                .Include(s => s.School)
+                .Include(t => t.Teacher)
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+
+            if (studyGroup == null) return NotFound();
+
+            var model = new StudyGroupEditViewModel
+            {
+                Uuid = studyGroup.Uuid,
+                Name = studyGroup.Name,
+                InitialDate = studyGroup.InitialDate,
+                FinalDate = studyGroup.FinalDate,
+                SchoolUuid = studyGroup.School.Uuid,
+                TeacherUuid = studyGroup.Teacher.Uuid
+            };
+
+            var schools = await _context.Schools
+                .Where(s => !s.IsDeleted)
+                .ToListAsync(cancellationToken);
+
+            var teachers = await _context.Teachers
+                .Where(t => t.SchoolId == studyGroup.SchoolId && !t.IsDeleted)
+                .ToListAsync(cancellationToken);
+
+            model.SchoolsList = new SelectList(schools, "Uuid", "Name", model.SchoolUuid);
+            model.TeachersList = new SelectList(teachers, "Uuid", "Name", model.TeacherUuid);
+
+            return View(model);
+        }
+
         [HttpPost]
-        //public async Task<IActionResult> Edit(CancellationToken cancellationToken)
-        //{
-        //    return View();
-        //}
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, StudyGroupEditViewModel model, CancellationToken cancellationToken)
+        {
+            if (id != model.Uuid) return NotFound();
+
+            ModelState.Remove("Grade");
+            ModelState.Remove("Section");
+            ModelState.Remove("Shift");
+
+            if (ModelState.IsValid)
+            {
+                var studyGroup = await _context.StudyGroups.FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+                if (studyGroup == null) return NotFound();
+
+                var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == model.SchoolUuid, cancellationToken);
+                var teacher = await _context.Teachers.FirstOrDefaultAsync(t => t.Uuid == model.TeacherUuid, cancellationToken);
+
+                if (school != null && teacher != null)
+                {
+
+
+                    studyGroup.FinalDate = model.FinalDate; 
+                    studyGroup.SchoolId = school.Id;        
+                    studyGroup.TeacherId = teacher.Id;      
+
+                    _context.Update(studyGroup);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            return View(model);
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
@@ -196,6 +263,23 @@ namespace SchoolManager.Controllers
                 .Where(t => t.SchoolId == schoolId && t.IsDeleted == false)
                 .OrderBy(t => t.Name)
                 .Select(t => new { t.Id, t.Name })
+                .ToListAsync(cancellationToken);
+
+            return Json(teachers);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetTeachersBySchoolUuid(Guid schoolUuid, CancellationToken cancellationToken)
+        {
+            // Descobre o ID inteiro
+            var school = await _context.Schools.FirstOrDefaultAsync(s => s.Uuid == schoolUuid, cancellationToken);
+
+            if (school == null) return Json(new List<object>());
+
+            var teachers = await _context.Teachers
+                .Where(t => t.SchoolId == school.Id && t.IsDeleted == false)
+                .OrderBy(t => t.Name)
+                .Select(t => new { value = t.Uuid, text = t.Name }) // Retorna UUID como valor
                 .ToListAsync(cancellationToken);
 
             return Json(teachers);

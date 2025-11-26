@@ -1,0 +1,146 @@
+﻿@using SchoolManager.Models.ViewModels.StudyGroupVM
+@using SchoolManager.Models.Enums
+@model StudyGroupEditViewModel
+@* Certifique-se que o nome da ViewModel bate com o arquivo C# *@
+
+@{
+    ViewData["Title"] = "Editar Turma";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
+
+        <div class="card-header bg-primary text-white d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
+            <i class="fas fa-edit fa-2x me-3"></i>
+            <div>
+                <h3 class="mb-0 fw-bold">Editar Turma</h3>
+                <small class="text-white opacity-75">
+                    Editando: <strong>@Model.Name</strong>
+                </small>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="Uuid" />
+
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
+                    <i class="fas fa-info-circle me-1"></i> Identificação
+                </h5>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome da Turma</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fas fa-lock"></i></span>
+                            <input asp-for="Name" class="form-control bg-light" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-calendar-alt me-1"></i> Cronograma
+                </h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="InitialDate" class="form-label fw-bold text-muted small">Data de Início</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-calendar-plus"></i></span>
+                            <input asp-for="InitialDate" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="InitialDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FinalDate" class="form-label fw-bold text-muted small">Data de Término</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-calendar-check"></i></span>
+                            <input asp-for="FinalDate" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="FinalDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
+                    <i class="fas fa-user-tie me-1"></i> Vínculos
+                </h5>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="SchoolUuid" class="form-label fw-bold text-muted small">Escola</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
+                            <select asp-for="SchoolUuid" class="form-select" asp-items="Model.SchoolsList" id="SchoolUuid">
+                                <option value="">-- Selecione a Escola --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="SchoolUuid" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TeacherUuid" class="form-label fw-bold text-muted small">Professor Responsável</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-chalkboard-teacher"></i></span>
+                            <select asp-for="TeacherUuid" class="form-select" asp-items="Model.TeachersList" id="TeacherUuid">
+                                <option value="">-- Selecione um Professor --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="TeacherUuid" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i> Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Lógica para trocar professores se mudar a escola
+            $("#SchoolUuid").change(function () {
+                var uuid = $(this).val();
+                var teacherSelect = $("#TeacherUuid");
+
+                teacherSelect.empty();
+                teacherSelect.append('<option value="">Carregando...</option>');
+
+                if (uuid) {
+                    $.ajax({
+                        // Precisamos daquele método GetTeachersBySchoolUuid que criamos no passo anterior
+                        url: '@Url.Action("GetTeachersBySchoolUuid", "StudyGroup")',
+                        type: 'GET',
+                        data: { schoolUuid: uuid },
+                        success: function (data) {
+                            teacherSelect.empty();
+                            teacherSelect.append('<option value="">-- Selecione um Professor --</option>');
+                            $.each(data, function (index, item) {
+                                teacherSelect.append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+                        },
+                        error: function () {
+                            teacherSelect.empty();
+                            teacherSelect.append('<option value="">Erro ao carregar</option>');
+                        }
+                    });
+                } else {
+                    teacherSelect.empty();
+                    teacherSelect.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
+                }
+            });
+        });
+    </script>
+}

@@ -5,8 +5,8 @@ namespace SchoolManager.Models
     public class StudyGroup : EntityBase
     {
         public string? Name { get; private set; }
-        public DateTime InitialDate { get; init; }
-        public DateTime FinalDate { get; init; }
+        public DateTime InitialDate { get; set; }
+        public DateTime FinalDate { get; set; }
         public int TeacherId { get; set; }
         public int SchoolId { get; set; }
 
