@@ -7,6 +7,7 @@ using SchoolManager.Models.ViewModels.StudyGroupVM;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using X.PagedList.Extensions;
+using static SchoolManager.Models.ViewModels.StudyGroupVM.DetailsStudyGroupVM;
 
 
 namespace SchoolManager.Controllers
@@ -24,8 +25,8 @@ namespace SchoolManager.Controllers
 
         public async Task<IActionResult> Index(int? page, CancellationToken cancellationToken)
         {
-            int pageNumber = page ?? 1; 
-            int pageSize = 10;          
+            int pageNumber = page ?? 1;
+            int pageSize = 10;
 
             var studygroupQuery = _context.StudyGroups
                 .Where(s => s.IsDeleted == false)
@@ -41,7 +42,7 @@ namespace SchoolManager.Controllers
                     FinalDate = s.FinalDate
                 });
 
-            var model =  studygroupQuery.ToPagedList(pageNumber, pageSize);
+            var model = studygroupQuery.ToPagedList(pageNumber, pageSize);
 
             return View(model);
         }
@@ -50,10 +51,10 @@ namespace SchoolManager.Controllers
             var model = new CreateStudyGroupVM();
 
             var schools = await _context.Schools
-                .Where(s => s.IsDeleted == false) 
+                .Where(s => s.IsDeleted == false)
                 .ToListAsync(cancellationToken);
 
-            
+
             model.SchoolsList = new SelectList(schools, "Id", "Name");
             model.TeachersList = new SelectList(new List<Teacher>(), "Id", "Name");
 
@@ -81,7 +82,7 @@ namespace SchoolManager.Controllers
 
                 _context.Add(studyGroup);
 
-           
+
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return RedirectToAction(nameof(Index));
@@ -102,53 +103,8 @@ namespace SchoolManager.Controllers
         //    return View();
         //}
 
-        public async Task<IActionResult> Delete(Guid? id, CancellationToken cancellationToken)
-        {
-            if (id == null) return View();
-
-            var studyGroup = await _context.StudyGroups
-                .Include(s => s.Teacher)
-                .Include(s => s.School) 
-                .Include(s => s.Students)
-                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
-
-            if (studyGroup == null) return View();
-            string groupName = studyGroup.Name ?? "Grupo sem nome";
-                var viewModel = new DeleteStudyGroupVM
-            {
-                Uuid = studyGroup.Uuid,
-                Name = groupName,
-                InitialDate = studyGroup.InitialDate,
-                FinalDate = studyGroup.FinalDate,
-                SchoolName = studyGroup.School?.Name ?? "Escola não encontrada",
-                TeacherName = studyGroup.Teacher?.Name ?? "Professor não encontrado",
-                StudentCount = studyGroup.Students.Count
-            };
-
         [HttpGet]
         public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
-            return View(viewModel);
-        }
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest("ID inválido fornecido para exclusão.");
-            }
-            var studyGroup = await _context.StudyGroups
-                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
-            if (studyGroup == null)
-            {
-                return NotFound();
-            }
-            studyGroup.MarkAsDeleted();
-            await _context.SaveChangesAsync(cancellationToken);
-            return RedirectToAction(nameof(Index));
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeletConfirmed(CancellationToken cancellationToken)
         {
             var studyGroup = await _context.StudyGroups
                 .AsNoTracking()
@@ -170,13 +126,59 @@ namespace SchoolManager.Controllers
                 InitialDate = studyGroup.InitialDate,
                 FinalDate = studyGroup.FinalDate,
                 Students = studyGroup.Students,
-                Teacher = new TeacherProjectionVM { Name = studyGroup.Name, Uuid = studyGroup.Uuid},
-                school = new SchoolProjectionVM { Name = school.Name, Uuid = school.Uuid}
+                Teacher = new TeacherProjectionVM { Name = studyGroup.Name, Uuid = studyGroup.Uuid },
+                school = new SchoolProjectionVM { Name = school.Name, Uuid = school.Uuid }
             };
 
             return View(model);
         }
 
+
+        public async Task<IActionResult> Delete(Guid? id, CancellationToken cancellationToken)
+        {
+            if (id == null) return View();
+
+            var studyGroup = await _context.StudyGroups
+                .Include(s => s.Teacher)
+                .Include(s => s.School)
+                .Include(s => s.Students)
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+
+            if (studyGroup == null) return View();
+            string groupName = studyGroup.Name ?? "Grupo sem nome";
+            var viewModel = new DeleteStudyGroupVM
+            {
+                Uuid = studyGroup.Uuid,
+                Name = groupName,
+                InitialDate = studyGroup.InitialDate,
+                FinalDate = studyGroup.FinalDate,
+                SchoolName = studyGroup.School?.Name ?? "Escola não encontrada",
+                TeacherName = studyGroup.Teacher?.Name ?? "Professor não encontrado",
+                StudentCount = studyGroup.Students.Count
+            };
+
+            return View(viewModel);
+
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
+        {
+            if (id == Guid.Empty)
+            {
+                return BadRequest("ID inválido fornecido para exclusão.");
+            }
+            var studyGroup = await _context.StudyGroups
+                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+            if (studyGroup == null)
+            {
+                return NotFound();
+            }
+            studyGroup.MarkAsDeleted();
+            await _context.SaveChangesAsync(cancellationToken);
+            return RedirectToAction(nameof(Index));
+        }
 
         private string GetEnumDisplayName(Enum enumValue)
         {
@@ -192,7 +194,7 @@ namespace SchoolManager.Controllers
         public async Task<JsonResult> GetTeachersBySchool(int schoolId, CancellationToken cancellationToken)
         {
             var teachers = await _context.Teachers
-                .Where(t => t.SchoolId == schoolId && t.IsDeleted == false) 
+                .Where(t => t.SchoolId == schoolId && t.IsDeleted == false)
                 .OrderBy(t => t.Name)
                 .Select(t => new { t.Id, t.Name })
                 .ToListAsync(cancellationToken);
