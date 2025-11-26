@@ -1,0 +1,131 @@
+﻿@using SchoolManager.Models.ViewModels.StudyGroupVM
+@model DetailsStudyGroupVM
+
+@{
+    ViewData["Title"] = "Detalhes do Grupo de Estudo";
+
+    string teacherName;
+    // 1. Verifica se a entidade Teacher existe
+    if (Model.Teacher == null)
+    {
+        teacherName = "Professor Indisponível";
+    }
+    else
+    {
+        // 2. Se existe, usa a propriedade Name. Se for nula, usa o fallback.
+        teacherName = Model.Teacher.Name ?? "Nome Indisponível";
+    }
+
+    // Cálculo seguro da contagem de alunos:
+    int studentCount = Model.Students?.Count ?? 0;
+}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
+
+        <div class="card-header bg-success text-white d-flex align-items-center p-4"
+             style="border-radius: 10px 10px 0 0; background: linear-gradient(45deg, #198754, #157347);">
+            <div>
+                <h2 class="mb-0 fw-bold">@Model.Name</h2>
+                <span class="opacity-75">
+                    <i class="fas fa-users me-1"></i> Detalhes do Grupo de Estudo
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+
+                <div class="col-md-6 border-end-md">
+                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
+                        <i class="fas fa-calendar-alt me-1"></i> Informações da Turma
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Nome</label>
+                        <div class="fs-5 text-dark">
+                            @Model.Name
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Data de Início</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-clock text-success opacity-75 me-1"></i>
+                            @Html.DisplayFor(m => m.InitialDate)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Data de Fim</label>
+                        <div class="fs-5 text-dark">
+                            <i class="far fa-clock text-danger opacity-75 me-1"></i>
+                            @Html.DisplayFor(m => m.FinalDate)
+                        </div>
+                    </div>
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold border-bottom pb-2">
+                        <i class="fas fa-users-cog me-1"></i> Participantes
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold">Professor(a)</label>
+                        <div class="fs-5 text-dark">
+                            <i class="fas fa-chalkboard-teacher text-primary opacity-50 me-1"></i>
+                            <strong>@teacherName</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold d-block mb-1">Total de Alunos</label>
+                        <div class="fs-3 fw-bold text-success">
+                            <i class="fas fa-user-graduate me-2"></i> @studentCount
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="mt-4" />
+
+            <h5 class="text-secondary mb-3 text-uppercase fs-6 fw-bold pb-2">
+                <i class="fas fa-list-ul me-1"></i> Lista de Alunos
+            </h5>
+
+            @if (Model.Students != null && Model.Students.Any())
+            {
+                <ul class="list-group list-group-flush border rounded">
+                    @foreach (var student in Model.Students.OrderBy(s => s.Name))
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @student.Name
+                            <span class="badge bg-light text-secondary">
+                                ID: @student.Id
+                            </span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-1"></i> Nenhum aluno matriculado neste grupo.
+                </div>
+            }
+
+        </div>
+
+        <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2"
+             style="border-radius: 0 0 10px 10px;">
+
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+
+            <a asp-action="Edit" asp-route-id="@Model.Uuid" class="btn btn-warning fw-bold text-dark px-4">
+                <i class="fas fa-pen me-1"></i> Editar
+            </a>
+        </div>
+
+    </div>
+</div>

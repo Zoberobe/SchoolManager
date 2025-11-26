@@ -96,10 +96,6 @@ namespace SchoolManager.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(CancellationToken cancellationToken)
-        {
-            return View();
-        }
         [HttpPost]
         //public async Task<IActionResult> Edit(CancellationToken cancellationToken)
         //{
@@ -129,6 +125,8 @@ namespace SchoolManager.Controllers
                 StudentCount = studyGroup.Students.Count
             };
 
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
             return View(viewModel);
         }
         [HttpPost, ActionName("Delete")]
@@ -152,7 +150,31 @@ namespace SchoolManager.Controllers
         [HttpPost]
         public async Task<IActionResult> DeletConfirmed(CancellationToken cancellationToken)
         {
-            return View();
+            var studyGroup = await _context.StudyGroups
+                .AsNoTracking()
+                .Include(s => s.Students)
+                .Include(t => t.Teacher)
+                .FirstOrDefaultAsync(ec => ec.Uuid == uuid, cancellationToken);
+
+            if (studyGroup is null)
+            {
+                return NotFound();
+            }
+
+            var school = await _context.Schools.FirstOrDefaultAsync(x => x.Id == studyGroup.SchoolId, cancellationToken);
+
+            var model = new DetailsStudyGroupVM
+            {
+                Uuid = studyGroup.Uuid,
+                Name = studyGroup.Name,
+                InitialDate = studyGroup.InitialDate,
+                FinalDate = studyGroup.FinalDate,
+                Students = studyGroup.Students,
+                Teacher = new TeacherProjectionVM { Name = studyGroup.Name, Uuid = studyGroup.Uuid},
+                school = new SchoolProjectionVM { Name = school.Name, Uuid = school.Uuid}
+            };
+
+            return View(model);
         }
 
 

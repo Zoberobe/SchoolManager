@@ -2,6 +2,9 @@
 {
     public class IndexStudyGroupVM
     {
+        public Guid Uuid { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; } 
 
         public Guid Uuid { get; set; }
         public string Name { get; set; }    
