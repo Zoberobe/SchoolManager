@@ -7,7 +7,7 @@
         public DateTime InitialDate { get; set; }
         public DateTime FinalDate { get; set; }
 
-
+        public int StudentsCount { get; set; }
         public SchoolProjectionVM school { get; set; }
         public TeacherProjectionVM Teacher { get; set; }
 

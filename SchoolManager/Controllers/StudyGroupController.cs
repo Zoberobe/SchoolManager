@@ -172,15 +172,16 @@ namespace SchoolManager.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
-        {
+        {   
             var studyGroup = await _context.StudyGroups
                 .AsNoTracking()
-                .Include(s => s.Students)
+                .Where(v => v.IsDeleted == false)
+                .Include(s => s.Students.Where(st => st.IsDeleted == false))
                 .Include(t => t.Teacher)
                 .FirstOrDefaultAsync(ec => ec.Uuid == id, cancellationToken);
 
             if (studyGroup is null)
-            {
+            {       
                 return NotFound();
             }
 
@@ -206,10 +207,10 @@ namespace SchoolManager.Controllers
             if (id == null) return View();
 
             var studyGroup = await _context.StudyGroups
-                .Include(s => s.Teacher)
-                .Include(s => s.School)
-                .Include(s => s.Students)
-                .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
+            .Include(s => s.Teacher)
+            .Include(s => s.School)
+            .Include(s => s.Students.Where(st => st.IsDeleted == false))
+            .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
 
             if (studyGroup == null) return View();
             string groupName = studyGroup.Name ?? "Grupo sem nome";
