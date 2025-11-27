@@ -7,7 +7,6 @@
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg border-0" style="width: 100%; max-width: 900px;">
 
-        <!-- CABEÇALHO -->
         <div class="card-header bg-warning text-dark d-flex align-items-center p-4" style="border-radius: 10px 10px 0 0;">
             <i class="fas fa-user-edit fa-2x me-3"></i>
             <div>
@@ -21,7 +20,6 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
                 <input type="hidden" asp-for="Uuid" />
 
-                <!-- SEÇÃO 1: DADOS PESSOAIS -->
                 <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2">
                     <i class="fas fa-id-card me-1"></i> Dados Pessoais
                 </h5>
@@ -37,7 +35,6 @@
                     </div>
                 </div>
 
-                <!-- SEÇÃO 2: DADOS ACADÊMICOS -->
                 <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
                     <i class="fas fa-graduation-cap me-1"></i> Acadêmico
                 </h5>
@@ -47,7 +44,8 @@
                         <label asp-for="SchoolUuid" class="form-label fw-bold text-muted small">Escola</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-school"></i></span>
-                            <select asp-for="SchoolUuid" class="form-select" asp-items="ViewBag.Schools" id="SchoolUuid">
+
+                            <select asp-for="SchoolUuid" class="form-select" asp-items="Model.SchoolsList" id="SchoolUuid">
                                 <option value="">-- Selecione a Escola --</option>
                             </select>
                         </div>
@@ -58,7 +56,7 @@
                         <label asp-for="StudyGroupUuid" class="form-label fw-bold text-muted small">Turma</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-users"></i></span>
-                            <select asp-for="StudyGroupUuid" class="form-select" asp-items="ViewBag.StudyGroups" id="StudyGroupUuid">
+                            <select asp-for="StudyGroupUuid" class="form-select" asp-items="Model.StudyGroupsList" id="StudyGroupUuid">
                                 <option value="">-- Selecione a Turma --</option>
                             </select>
                         </div>
@@ -66,13 +64,11 @@
                     </div>
                 </div>
 
-                <!-- SEÇÃO 3: FINANCEIRO -->
                 <h5 class="text-secondary text-uppercase fs-6 fw-bold mb-3 border-bottom pb-2 mt-4">
                     <i class="fas fa-hand-holding-usd me-1"></i> Financeiro
                 </h5>
 
                 <div class="row g-3 align-items-center">
-                    <!-- Switch de Bolsista -->
                     <div class="col-md-6">
                         <div class="p-3 border rounded bg-light d-flex align-items-center">
                             <div class="form-check form-switch">
@@ -84,7 +80,6 @@
                         </div>
                     </div>
 
-                    <!-- Valor da Mensalidade (Controlado pelo JS) -->
                     <div class="col-md-6" id="divMonthlyFeeContainer">
                         <label asp-for="MonthlyFee" class="form-label fw-bold text-muted small">Valor da Mensalidade (R$)</label>
                         <div class="input-group">
@@ -95,7 +90,6 @@
                     </div>
                 </div>
 
-                <!-- RODAPÉ / BOTÕES -->
                 <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
                     <a asp-action="Index" class="btn btn-outline-secondary px-4">
                         <i class="fas fa-times me-1"></i> Cancelar
@@ -111,7 +105,6 @@
 </div>
 
 @section Scripts {
-    <!-- IMPORTANTE: Adiciona jQuery explicitamente para resolver o erro "$ is not defined" -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     @{
@@ -119,48 +112,39 @@
     }
 
     <script>
-        // Correção para validação de moedas (vírgula vs ponto)
+        // Validações numéricas
         $.validator.methods.range = function (value, element, param) {
             var globalizedValue = value.replace(",", ".");
             return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
         }
-
         $.validator.methods.number = function (value, element) {
             return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
         }
 
         $(document).ready(function () {
 
-            // --- 1. LÓGICA DO BOLSISTA (ATUALIZADA) ---
+            // 1. CAPTURA O ID ATUAL (Vindo do Banco de Dados)
+            // Isso garante que o JS saiba o que selecionar depois de recarregar a lista
+            var preSelectedGroupUuid = '@Model.StudyGroupUuid';
+
+            // Lógica do Bolsista
             function toggleFee() {
                 var isChecked = $("#chkScholarship").is(":checked");
+                var feeContainer = $("#divMonthlyFeeContainer");
                 var feeInput = $("#txtMonthlyFee");
 
-                // Agora usamos o ID específico do container para ocultar/mostrar a coluna inteira
-                var feeContainer = $("#divMonthlyFeeContainer");
-
                 if (isChecked) {
-                    // SE FOR BOLSISTA:
-                    feeContainer.fadeOut(200); // Animação suave
+                    feeContainer.fadeOut(200);
                     feeInput.val(0);
                 } else {
-                    // SE NÃO FOR BOLSISTA:
                     feeContainer.fadeIn(200);
-
-                    if (feeInput.val() == 0 || feeInput.val() == "0,00") {
-                        feeInput.val('');
-                    }
+                    if (feeInput.val() == 0 || feeInput.val() == "0,00") feeInput.val('');
                 }
             }
-
-            // Inicializa e configura o evento
             toggleFee();
-            $("#chkScholarship").change(function () {
-                toggleFee();
-            });
+            $("#chkScholarship").change(toggleFee);
 
-
-            // --- 2. LÓGICA DA TROCA DE ESCOLA (MANTIDA IGUAL) ---
+            // Lógica de Troca de Escola
             $("#SchoolUuid").change(function () {
                 var selectedSchoolUuid = $(this).val();
                 var groupsDropdown = $("#StudyGroupUuid");
@@ -170,22 +154,32 @@
 
                 if (selectedSchoolUuid) {
                     $.ajax({
-                        url: '@Url.Action("GetStudyGroupsBySchool", "Student")', // Confirme se o Controller é 'Student' mesmo
+                        url: '@Url.Action("GetStudyGroupsBySchool", "Student")',
                         type: 'GET',
                         data: { schoolUuid: selectedSchoolUuid },
                         success: function (data) {
                             groupsDropdown.empty();
                             groupsDropdown.append('<option value="">-- Selecione a Turma --</option>');
+
                             $.each(data, function (index, item) {
                                 groupsDropdown.append($('<option>', {
                                     value: item.value,
-                                    text: item.text
+                                    text: item.text // Já vem formatado do Controller: "Nome (Prof...)"
                                 }));
                             });
+
+                            // 2. RE-SELECIONA A TURMA CORRETA
+                            // Se tivermos um valor salvo na memória, aplicamos ele aqui
+                            if (preSelectedGroupUuid) {
+                                groupsDropdown.val(preSelectedGroupUuid);
+                                // Limpamos a variável para que, se o usuário trocar de escola manualmente depois,
+                                // o código não tente forçar essa turma antiga de novo.
+                                preSelectedGroupUuid = null;
+                            }
                         },
                         error: function() {
-                             groupsDropdown.empty();
-                             groupsDropdown.append('<option value="">Erro ao carregar turmas</option>');
+                            groupsDropdown.empty();
+                            groupsDropdown.append('<option value="">Erro ao carregar</option>');
                         }
                     });
                 } else {
@@ -193,6 +187,12 @@
                     groupsDropdown.append('<option value="">-- Selecione uma Escola Primeiro --</option>');
                 }
             });
+
+            // 3. GATILHO INICIAL
+            // Dispara o carregamento assim que a página abre para preencher a lista corretamente
+            if ($("#SchoolUuid").val()) {
+                $("#SchoolUuid").trigger('change');
+            }
         });
     </script>
 }
