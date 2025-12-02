@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic; // Necessário se você quiser manter a StudentCount
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManager.Models.ViewModels.StudyGroupVM
 {

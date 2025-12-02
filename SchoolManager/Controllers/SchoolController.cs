@@ -140,7 +140,7 @@ namespace SchoolManager.Controllers
         public async Task<IActionResult> Delete(Guid uuid, CancellationToken cancellationToken)
         {
             var school = await _context.Schools
-                .AsNoTracking() // Adicione AsNoTracking para performance, pois é só leitura
+                .AsNoTracking() 
                 .FirstOrDefaultAsync(s => s.Uuid == uuid, cancellationToken);
 
             if (school == null)

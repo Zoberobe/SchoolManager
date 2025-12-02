@@ -11,7 +11,7 @@ namespace SchoolManager.Controllers
 
         public IActionResult Privacy()
         {
-            return View();//teste new 
+            return View();
         }
     }
 }
