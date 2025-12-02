@@ -9,7 +9,6 @@ namespace SchoolManager.Controllers
 {
     public class AdministratorController : Controller
     {
-        // Injeção de dependência do DbContext
         private readonly AppDbContext _context;
 
         public AdministratorController(AppDbContext context)
@@ -99,7 +98,6 @@ namespace SchoolManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Deletar um administrador da exibição ~mas não do banco de dados~
         public async Task<IActionResult> Delete(Guid uuid, CancellationToken cancellationToken)
         {
 
@@ -132,7 +130,6 @@ namespace SchoolManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Detalhes do administrador
         public async Task<IActionResult> Details(Guid uuid, CancellationToken cancellationToken)
         {
             var administrator = _context.Administrators

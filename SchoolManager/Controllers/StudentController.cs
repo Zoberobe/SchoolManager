@@ -221,7 +221,7 @@ namespace SchoolManager.Controllers
                 }
                 else
                 {
-                    // VALIDAÇÃO EXTRA: A turma nova pertence à escola nova?
+                    
                     if (newGroup.SchoolId != newSchool.Id)
                     {
                         ModelState.AddModelError("StudyGroupUuid", "A turma selecionada não pertence à escola informada.");
@@ -229,7 +229,7 @@ namespace SchoolManager.Controllers
                         return View(viewModel);
                     }
 
-                    // Atualiza os dados na memória
+                    
                     studentOriginal.UpdateFullProfile(
                         viewModel.Name,
                         viewModel.MonthlyFee,
@@ -238,17 +238,14 @@ namespace SchoolManager.Controllers
                         viewModel.IsScholarshipRecipient
                     );
 
-                    // Persiste no Banco
                     _context.Update(studentOriginal);
                     await _context.SaveChangesAsync(cancellationToken);
 
-                    // --- A CORREÇÃO ESTÁ AQUI ---
-                    // Redireciona para a lista após o sucesso
+                    
                     return RedirectToAction(nameof(Index));
                 }
             }
 
-            // Se algo deu errado, recarrega a tela
             await ViewStudents(viewModel, cancellationToken);
             return View(viewModel);
         }
@@ -279,7 +276,7 @@ namespace SchoolManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken) // Recebe Guid
         {
-            // Busca pelo UUID
+            
             var student = await _context.Students
                 .FirstOrDefaultAsync(s => s.Uuid == id, cancellationToken);
 
@@ -297,7 +294,7 @@ namespace SchoolManager.Controllers
 
         private async Task ViewStudents(StudentFormViewModel viewModel, CancellationToken cancellationToken)
         {
-            // 1. Carregar Escolas
+           
             var schools = await _context.Schools
                 .AsNoTracking()
                 .Where(s => !s.IsDeleted)
@@ -306,32 +303,32 @@ namespace SchoolManager.Controllers
 
             viewModel.SchoolsList = new SelectList(schools, "Uuid", "Name", viewModel.SchoolUuid);
 
-            // 2. Carregar Turmas
+            
             if (viewModel.SchoolUuid != Guid.Empty)
             {
-                // Descobre o ID (int) da escola selecionada
+                
                 var schoolId = schools.FirstOrDefault(s => s.Uuid == viewModel.SchoolUuid)?.Id;
 
                 if (schoolId.HasValue)
                 {
                     var studyGroups = await _context.StudyGroups
                         .AsNoTracking()
-                        .Include(g => g.Teacher) // <--- IMPORTANTE: Incluir Professor
+                        .Include(g => g.Teacher) 
                         .Where(g => g.SchoolId == schoolId && !g.IsDeleted)
                         .OrderBy(g => g.Name)
                         .ToListAsync(cancellationToken);
 
-                    // AQUI MUDAMOS A CRIAÇÃO DO DROPDOWN
+                   
                     viewModel.StudyGroupsList = new SelectList(
                         studyGroups.Select(g => new
                         {
                             Uuid = g.Uuid,
-                            // Cria um campo novo "Display" juntando Turma + Professor
+                            
                             Display = $"{g.Name} (Prof. {g.Teacher.Name})"
                         }),
-                        "Uuid",     // Valor que vai pro banco
-                        "Display",  // Texto que aparece na tela
-                        viewModel.StudyGroupUuid // Item selecionado
+                        "Uuid",     
+                        "Display",  
+                        viewModel.StudyGroupUuid 
                     );
                 }
                 else
@@ -358,14 +355,14 @@ namespace SchoolManager.Controllers
             }
 
             var groups = await _context.StudyGroups
-                .AsNoTracking() // Melhor performance
-                .Include(g => g.Teacher) // Necessário para acessar g.Teacher.Name
-                .Where(g => g.SchoolId == school.Id && !g.IsDeleted) // Filtra turmas ativas
+                .AsNoTracking() 
+                .Include(g => g.Teacher) 
+                .Where(g => g.SchoolId == school.Id && !g.IsDeleted) 
                 .OrderBy(g => g.Name)
                 .Select(g => new
                 {
                     value = g.Uuid,
-                    // Formatação: "1º Ano A (Prof. Arthur)"
+                    
                     text = $"{g.Name} (Prof. {g.Teacher.Name})"
                 })
                 .ToListAsync(cancellationToken);

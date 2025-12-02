@@ -5,7 +5,7 @@ namespace SchoolManager.ViewModels
     public class StudentViewModel
     {
 
-        [Required(ErrorMessage = "O nome é obrigatório")] // Adicione isso
+        [Required(ErrorMessage = "O nome é obrigatório")] 
         [Display(Name = "Nome do Aluno")]
         public required string Name { get; set; }
             
@@ -15,10 +15,10 @@ namespace SchoolManager.ViewModels
         public bool IsScholarshipRecipient { get; set; }
 
         [Display(Name = "Mensalidade")]
-        [DataType(DataType.Currency)] // Formata como moeda na View automaticamente
+        [DataType(DataType.Currency)] 
         public decimal MonthlyFee { get; set; }
 
-        // Exemplo: Uma propriedade calculada apenas para exibição
+        
         [Display(Name = "Status da Matrícula")]
         public string StatusDescricao => IsScholarshipRecipient ? "Bolsista Integral" : "Pagante";
     }

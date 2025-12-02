@@ -88,7 +88,7 @@ namespace SchoolManager.Controllers
                                     .Include(t => t.School)
                                     .FirstOrDefaultAsync(t => t.Uuid == uuid, cancellationToken);
 
-            if (teacher == null) return View();
+            if (teacher == null) return NotFound();
 
             var model = new EditTeacherIVM
             {
@@ -99,7 +99,6 @@ namespace SchoolManager.Controllers
                 InputSalary = teacher.Salary,
                 SchoolName = teacher.School?.Name ?? "",
 
-                // Aqui você já está passando os dados corretamente para o Model
                 Matterlists = GetMatterSelectList(),
                 Schoollist = await GetSchoolSelectList(cancellationToken)
             };
@@ -195,6 +194,7 @@ namespace SchoolManager.Controllers
 
             var model = new DetailsTeacherIVM
             {
+                Uuid = teacher.Uuid,
                 Name = teacher.Name,
                 Birth = teacher.Birth,
                 Matter = teacher.Matter,

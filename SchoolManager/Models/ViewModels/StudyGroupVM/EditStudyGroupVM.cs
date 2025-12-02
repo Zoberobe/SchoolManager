@@ -9,9 +9,9 @@ namespace SchoolManager.Models.ViewModels.StudyGroupVM
         public Guid Uuid { get; set; }
 
         [Display(Name = "Nome Atual")]
-        public string? Name { get; set; } // Apenas leitura visual
+        public string? Name { get; set; }
 
-        // Enums para regenerar o nome (caso queira mudar)
+        
         [Display(Name = "Série / Ano")]
         public GradeLevel Grade { get; set; }
 
@@ -37,7 +37,6 @@ namespace SchoolManager.Models.ViewModels.StudyGroupVM
         [Required(ErrorMessage = "O professor é obrigatório")]
         public Guid TeacherUuid { get; set; }
 
-        // Listas para os Dropdowns
         public SelectList? SchoolsList { get; set; }
         public SelectList? TeachersList { get; set; }
     }

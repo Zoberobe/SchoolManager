@@ -280,7 +280,7 @@ namespace SchoolManager.Controllers
             var teachers = await _context.Teachers
                 .Where(t => t.SchoolId == school.Id && t.IsDeleted == false)
                 .OrderBy(t => t.Name)
-                .Select(t => new { value = t.Uuid, text = t.Name }) // Retorna UUID como valor
+                .Select(t => new { value = t.Uuid, text = t.Name }) 
                 .ToListAsync(cancellationToken);
 
             return Json(teachers);
